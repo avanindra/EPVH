@@ -1,5 +1,5 @@
-/*
- * Copyright (c) 2012, avanindra <email>
+   /*
+ * Copyright (c) 2012, avanindra <avanindra.singh@gmail.com>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -204,14 +204,14 @@ void BaseVH::buildPrimitives( int camId )
 
      mCalibration->silhoutte( camId ).getBoundingBoxImage( mBoundingBoxImages[ camId ] );
 
-	 std::vector< std::vector< cv::Point2f > > allContours;
+     std::vector< std::vector< cv::Point2f > > allContours;
      std::vector< cv::Vec4i > contourHierarchy;
   
      mCalibration->silhoutte( camId ).getHierarchyContours( allContours , contourHierarchy );
 	
-	 int numAllContours = allContours.size();
+     int numAllContours = allContours.size();
 
-    filterContoursByEdgeAngle( allContours );
+      filterContoursByEdgeAngle( allContours );
 	
 	mScale[ camId ] = 1.0;
 	mInvScale[ camId ] = 1.0;
@@ -245,9 +245,9 @@ void BaseVH::buildPrimitives( int camId )
 
         for( int strip = 0; strip < numStrips; strip++ )
         {
-	       tr::Vector3d ray;
+	   tr::Vector3d ray;
 	  
-	       mCalibration->getRay( camId , mObjectContours[ camId ][ contour ][ strip ] , ray );
+	   mCalibration->getRay( camId , mObjectContours[ camId ][ contour ][ strip ] , ray );
 	  
            generators[ strip ] = new Generator();
            generators[ strip ]->leftViewEdgeId = -1;
@@ -263,9 +263,9 @@ void BaseVH::buildPrimitives( int camId )
                 
          for( int strip = 0; strip < numStrips; strip++ )
          {
-	       generators[ strip ]->mRightGen = generators[ ( strip + 1 ) % numStrips ];
-	       generators[ strip ]->mLeftGen = generators[ ( strip - 1 + numStrips ) % numStrips ];
-	     }
+	   generators[ strip ]->mRightGen = generators[ ( strip + 1 ) % numStrips ];
+	   generators[ strip ]->mLeftGen = generators[ ( strip - 1 + numStrips ) % numStrips ];
+	 }
 
            mGenerators[ camId ].push_back( generators );
 
@@ -804,7 +804,7 @@ void BaseVH::clearGenerators()
 
   for( int ss = 0; ss < size1 ; ss++ )
   {
-	  int size2 = mGenerators[ ss ].size();
+      int size2 = mGenerators[ ss ].size();
 
       for( int ss2 = 0; ss2 < size2; ss2++ )
 	  {
