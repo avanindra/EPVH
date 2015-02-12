@@ -13,3 +13,6 @@ Install Directory=
 
 [Project]
 VersionControlSupport=kdevgit
+
+[SourceFileTemplates]
+LastUsedTemplate=/home/avanindra/.kde/share/apps/kdevfiletemplates/template_descriptions/cpp_basic.desktop
