@@ -31,8 +31,7 @@
 
 #include "basevh.h"
 #include "segmentclipper.h"
-#include "vtkSmartPointer.h"
-#include "vtkPolyData.h"
+#include "vtkincludes.h"
 
 
 namespace tr{
