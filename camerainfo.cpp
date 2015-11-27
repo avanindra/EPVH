@@ -35,15 +35,32 @@ int CameraInfo::get_image_height( int camId )
   return mImageDims[ camId ].height;
 }
 
-void CameraInfo::projectPoint()
+void CameraInfo::projectPoint(Eigen::Vector3d objectPoint, int camId, Eigen::Vector2d &projection)
 {
+  Eigen::Vector4d pos4;
 
+  pos4.block( 0 , 0 , 3 , 1 ) = objectPoint;
+
+  pos4( 3 ) = 1;
+
+  Eigen::Vector3d proj3 = mProjectionMatrices[ camId ] * pos4;
+
+  projection( 0 ) = proj3( 0 ) / proj3( 2 );
+  projection( 1 ) = proj3( 1 ) / proj3( 2 );
 
 }
 
 void CameraInfo::getRay(int camId, const Eigen::Vector2d &imagePos, Eigen::Vector3d &rayDir)
 {
+  Eigen::Vectro3d pos3;
 
+  pos3( 0 ) = imagePos( 0 );
+  pos3( 1 ) = imagePos( 1 );
+  pos3( 2 ) = 1;
+
+  rayDir = mInvProjectionMatrices[ camId ] * pos3;
+
+  rayDir.normalize();
 }
 
 

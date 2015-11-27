@@ -58,7 +58,7 @@ namespace tr{
 
 		mCalibration->get_camera_center( camId1 , cameraCenter1 );
 
-		mCalibration->projectPointU( cameraCenter1 , camId2 , epipole );
+        mCalibration->projectPoint( cameraCenter1 , camId2 , epipole );
 		//add check for pole on infinity.
 
 		int numContours = mObjectContours[ camId2 ].size();
@@ -1303,8 +1303,8 @@ namespace tr{
 			if( camId == camId1 || camId == camId2 )
 				continue;
 
-			mCalibration->projectPointU( point1 , camId , proj1 );
-			mCalibration->projectPointU( point2 , camId , proj2 );  
+            mCalibration->projectPoin( point1 , camId , proj1 );
+            mCalibration->projectPoin( point2 , camId , proj2 );
 
             Eigen::Vector2d clippedEnd;
 
@@ -1352,8 +1352,8 @@ namespace tr{
 
         Eigen::Vector2d end1 , end2;
 
-		mCalibration->projectPointU( edge.point1 , camId , end1 );
-		mCalibration->projectPointU( edge.point2 , camId , end2 );
+        mCalibration->projectPoin( edge.point1 , camId , end1 );
+        mCalibration->projectPoin( edge.point2 , camId , end2 );
 
         std::pair< Eigen::Vector2d , Eigen::Vector2d > inititialEdge;
 
@@ -1450,7 +1450,7 @@ namespace tr{
 		mCalibration->get_camera_center( camId1 , cameraCenter1 );
 		mCalibration->get_camera_center( camId2 , cameraCenter2 );
 
-		mCalibration->projectPointU( cameraCenter1 , camId2 , epipole );
+        mCalibration->projectPoin( cameraCenter1 , camId2 , epipole );
 
 		Vector2 vec1 = refPoint - epipole;
 
@@ -1669,7 +1669,7 @@ namespace tr{
 		mCalibration->get_camera_center( camId1 , cameraCenter1 );
 		mCalibration->get_camera_center( camId2 , cameraCenter2 );
 
-		mCalibration->projectPointU( cameraCenter1 , camId2 , epipole );
+        mCalibration->projectPoin( cameraCenter1 , camId2 , epipole );
 
 		int numContours = mObjectContours[ camId1 ].size();
 

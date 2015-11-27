@@ -49,10 +49,6 @@ BaseVH::BaseVH()
 }
 
 
-void BaseVH::loadCalibration(Calibration_Info* calibration)
-{
-  mCalibration = calibration;
-}
 
 void BaseVH::setSilhouetteCameras(std::vector< int >& silhoutteCameras)
 {

@@ -191,7 +191,6 @@ protected:
 public:
     BaseVH();
    
-    void loadCalibration( Calibration_Info *calibration );   
     void loadCameraInfo( CameraInfo *cameraInfo );
     void setSilhouetteCameras( std::vector< int > &silhoutteCameras );
 	void clearGenerators();

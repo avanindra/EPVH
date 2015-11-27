@@ -29,6 +29,7 @@
 #ifndef EPVH_H
 #define EPVH_H
 
+#include "eigenincludes.h"
 #include "basevh.h"
 #include "segmentclipper.h"
 #include "vtkincludes.h"
@@ -39,7 +40,7 @@ namespace tr{
   
 struct Edge
 {
-  Point3d point1 , point2;
+  Eigen::Vector3d point1 , point2;
   
   double depth1 , depth2;
   
@@ -103,11 +104,11 @@ protected:
   
   void generateEdgePolygons( vtkSmartPointer< vtkPolyData > &polygons );
   
-  tr::Point3d estimateMaximalPoint( tr::Point3d &startPoint ,  tr::Vector3d &direction , 
+  Eigen::Vector3d estimateMaximalPoint( Eigen::Vector3d &startPoint ,  tr::Vector3d &direction ,
 			                        Generator* gen1 , Generator *gen2 ,  
 									uchar &intersectionIndex , int ignoreIndex = -1 );
   
-  bool clipEdge( int camId1 , int camId2 , tr::Point3d &point1 , tr::Point3d &point2 , 
+  bool clipEdge( int camId1 , int camId2 , Eigen::Vector3d &point1 , Eigen::Vector3d &point2 ,
 		         int &clipCamId , int &clipContourId , int &clipStripId  );
   
   void clipEdge( tr::Edge edge , int camId , std::vector< tr::Edge > &clippedEdges );
@@ -132,9 +133,9 @@ protected:
   
   void buildVisualHull( std::vector< int > &silhouetteIds , vtkSmartPointer< vtkPolyData > &visualHull );
   
-  double clipWithGenerator( tr::Point3d &p1 , tr::Point3d &p2 , int camId , int contourId , int stripId );
+  double clipWithGenerator( Eigen::Vector3d &p1 , Eigen::Vector3d &p2 , int camId , int contourId , int stripId );
  
-  double clipRayWithGenerator( tr::Point3d &o , tr::Vector3d &r , int camId , int contourId , int stripId  );
+  double clipRayWithGenerator( Eigen::Vector3d &o , tr::Vector3d &r , int camId , int contourId , int stripId  );
   
 public:
     
