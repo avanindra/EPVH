@@ -47,11 +47,11 @@ class Generator;
   
   Generator *mLeftGen , *mRightGen , *mGen;
   
-  tr::Point3d mCoords;
+  Eigen::Vector3d  mCoords;
   
-  tr::Vector3d mLE;
+  tr::Eigen::Vector3d  mLE;
   
-  tr::Point3d mLeftCoords , mRightCoords;
+  Eigen::Vector3d  mLeftCoords , mRightCoords;
   
   int mId;
   
@@ -76,9 +76,9 @@ struct Generator
   
   int leftViewEdgeId , rightViewEdgeId;
   
-  Vector3d normal;
+  Eigen::Vector3d  normal;
   
-  Vector3d leftRay , rightRay;
+  Eigen::Vector3d  leftRay , rightRay;
   
   uchar normalComputed;
   
@@ -92,7 +92,7 @@ struct Generator
 
 struct ViewingEdgeInfo
 {
-  Point3d point1 , point2;
+  Eigen::Vector3d  point1 , point2;
   
   int camId , camId1 , camId2;
   
