@@ -33,7 +33,7 @@
 #include <vector>
 #include <algorithm>
 #include <iostream>
-#include "opencv/cv.h"
+#include "opencvincludes.h"
 #include "types/generaltypes.h"
 
 

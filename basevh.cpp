@@ -532,12 +532,12 @@ void BaseVH::stripEdgeIntersection( int camId, int contourId, int stripId, cv::P
 
 }
 
-void BaseVH::stripEdgeIntersection( int camId, int contourId, int stripId, Point2 end1, Point2 end2,
+void BaseVH::stripEdgeIntersection( int camId, int contourId, int stripId, Eigen::Vector2d end1, Eigen::Vector2d end2,
                                                Point2& intersectionPoint, std::pair< float, float >& coefficientPairs )
 {
     int numStrips = mObjectContours[ camId ][ contourId ].size();
 
-    Point2 point1 , point2;
+    Eigen::Vector2d point1 , point2;
 
     point1.x() = ( mObjectContours[ camId ][ contourId ][ stripId ].x + mOffset[ camId ].x ) * mInvScale[ camId ];
     point1.y() = ( mObjectContours[ camId ][ contourId ][ stripId ].y + mOffset[ camId ].y ) * mInvScale[ camId ];
@@ -548,14 +548,14 @@ void BaseVH::stripEdgeIntersection( int camId, int contourId, int stripId, Point
     point2.y() = ( mObjectContours[ camId ][ contourId ][ stripId2 ].y + mOffset[ camId ].y ) * mInvScale[ camId ];
 
 
-    tr::lineToLineIntersection2D( point1 , point2 , end1 , end2 , intersectionPoint , coefficientPairs );
+    tr::lineToLineIntersection2D( point1 , Eigen::Vector2d , end1 , end2 , intersectionPoint , coefficientPairs );
 
 }
 
 
-float BaseVH::distanceToTheStrip( tr::Point2 epipole , tr::Point2 secondPoint , int camId , int contourId , int stripId )
+float BaseVH::distanceToTheStrip( Eigen::Vector2d epipole , Eigen::Vector2d secondPoint , int camId , int contourId , int stripId )
 {
-  tr::Point2 end1 , end2;
+  Eigen::Vector2d end1 , end2;
   
   end1.x() = ( mObjectContours[ camId ][ contourId ][ stripId ].x + mOffset[ camId ].x ) * mInvScale[ camId ];
   end1.y() = ( mObjectContours[ camId ][ contourId ][ stripId ].y + mOffset[ camId ].y ) * mInvScale[ camId ];
@@ -565,7 +565,7 @@ float BaseVH::distanceToTheStrip( tr::Point2 epipole , tr::Point2 secondPoint , 
   end2.x() = ( mObjectContours[ camId ][ contourId ][ ( stripId + 1 ) % numStrips ].x + mOffset[ camId ].x ) * mInvScale[ camId ];
   end2.y() = ( mObjectContours[ camId ][ contourId ][ ( stripId + 1 ) % numStrips ].y + mOffset[ camId ].y ) * mInvScale[ camId ];
   
-  tr::Point2 intersectionPoint;
+  Eigen::Vector2d intersectionPoint;
   
   tr::lineToLineIntersection2D( epipole , secondPoint , end1 , end2 , intersectionPoint );
   
@@ -575,7 +575,7 @@ float BaseVH::distanceToTheStrip( tr::Point2 epipole , tr::Point2 secondPoint , 
 }
 
 
-bool BaseVH::isInsideToEdge( Point2 point1 , Point2 point2 , Point2 point )
+bool BaseVH::isInsideToEdge( Eigen::Vector2d point1 , Eigen::Vector2d Eigen::Vector2d , Eigen::Vector2d point )
 {
   float val = ( point.y() - point1.y() ) * ( point2.x() - point1.x() ) - ( point2.y() - point1.y() ) * ( point.x() - point1.x() );
 
@@ -584,12 +584,12 @@ bool BaseVH::isInsideToEdge( Point2 point1 , Point2 point2 , Point2 point )
 
 
 
-bool BaseVH::isInsideStrip(  int camId, int contourId , int stripId, Point2 point )
+bool BaseVH::isInsideStrip(  int camId, int contourId , int stripId, Eigen::Vector2d point )
 {
     
 	int numStrips = mObjectContours[ camId ][ contourId ].size();
   
-    Point2 point1 , point2;
+    Eigen::Vector2d point1 , point2;
 
     point1.x() = ( mObjectContours[ camId ][ contourId ][ stripId ].x + mOffset[ camId ].x ) * mInvScale[ camId ];
     point1.y() = ( mObjectContours[ camId ][ contourId ][ stripId ].y + mOffset[ camId ].y ) * mInvScale[ camId ];
@@ -600,7 +600,7 @@ bool BaseVH::isInsideStrip(  int camId, int contourId , int stripId, Point2 poin
     point2.y() = ( mObjectContours[ camId ][ contourId ][ stripId2 ].y + mOffset[ camId ].y ) * mInvScale[ camId ];
   
   
-   return isInsideToEdge(  point1 , point2 , point  );
+   return isInsideToEdge(  point1 , Eigen::Vector2d , point  );
 
 }
 
@@ -676,7 +676,7 @@ void BaseVH::displayContour3D( std::vector< std::vector< cv::Point2f > > contour
     cv::Point2f &pt1f = contours[ ee1 ][ ee2 ];
     cv::Point2f &pt2f = contours[ ee1 ][ ( ee2 + 1 ) % contours[ ee1 ].size() ];
     
-    tr::Point3d pt1( pt1f.x , pt1f.y , 0 ) , pt2( pt2f.x , pt2f.y , 0 );
+    Eigen::Vector3d  pt1( pt1f.x , pt1f.y , 0 ) , pt2( pt2f.x , pt2f.y , 0 );
 
     //if( ee2 == 150 )
     // std::cout<< pt1.transpose() <<" -- "<< pt2.transpose() << std::endl;

@@ -22,6 +22,31 @@ CameraInfo::CameraInfo()
 
 }
 
+
+int CameraInfo::get_image_width( int camId )
+{
+  return mImageDims[ camId ].width;
+}
+
+
+int CameraInfo::get_image_height( int camId )
+{
+
+  return mImageDims[ camId ].height;
+}
+
+void CameraInfo::projectPoint()
+{
+
+
+}
+
+void CameraInfo::getRay(int camId, const Eigen::Vector2d &imagePos, Eigen::Vector3d &rayDir)
+{
+
+}
+
+
 CameraInfo::~CameraInfo()
 {
 

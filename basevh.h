@@ -29,7 +29,7 @@
 #ifndef BASEVH_H
 #define BASEVH_H
 
-#include "calibration/calibration_info.h"
+//#include "calibration/calibration_info.h"
 #include "queue"
 #include "camerainfo.h"
 #include "opencvincludes.h"
@@ -147,7 +147,7 @@ class BaseVH
   
 protected:
   
-  Calibration_Info *mCalibration;
+  CameraInfo *mCalibration;
   std::vector< int > mSilhoutteCameras;
   std::vector< int > mMostOrthogonalCamera;
   std::vector< uchar > mIsCameraUsed;

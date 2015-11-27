@@ -173,7 +173,7 @@ namespace tr{
 
 				edgeDistPair.first = currentId;
 
-				tr::Point2 end1 , end2;
+                Eigen::Vector2d end1 , end2;
 
 				int cid1 ,stId1 , cid2 , stId2;
 
@@ -467,7 +467,7 @@ namespace tr{
 				}
 			}
 
-			tr::Point3d maximalPoint = estimateMaximalPoint( vertex->mCoords , lLeft , vertex->mLeftGen , 
+            Eigen::Vector3d maximalPoint = estimateMaximalPoint( vertex->mCoords , lLeft , vertex->mLeftGen ,
 				vertex->mGen  , intersectionIndex , ignoreIndex );
 
 
@@ -705,7 +705,7 @@ namespace tr{
 				}
 			}
 
-			tr::Point3d maximalPoint = estimateMaximalPoint( vertex->mCoords , lRight , vertex->mRightGen , 
+            Eigen::Vector3d maximalPoint = estimateMaximalPoint( vertex->mCoords , lRight , vertex->mRightGen ,
 				vertex->mGen  , intersectionIndex , ignoreIndex );
 
 
@@ -1296,7 +1296,7 @@ namespace tr{
 
 		for( int sc = 0; sc < numSilhouetteCams; sc++  )
 		{  
-			tr::Point2f  proj1 ,  proj2 ;    
+            Eigen::Vector2d  proj1 ,  proj2 ;
 
 			int camId = mSilhoutteCameras[ sc ];
 
@@ -1306,7 +1306,7 @@ namespace tr{
 			mCalibration->projectPointU( point1 , camId , proj1 );
 			mCalibration->projectPointU( point2 , camId , proj2 );  
 
-			tr::Point2f clippedEnd;
+            Eigen::Vector2d clippedEnd;
 
 			std::pair< int , int > strip;
 
@@ -1319,7 +1319,7 @@ namespace tr{
 
 				//       tr::Vector3d ray;
 				//       
-				//       tr::Point3d cameraCenter;
+                //       Eigen::Vector3d cameraCenter;
 				//       
 				//       mCalibration->get_camera_center( camId , cameraCenter );
 				//        
@@ -1348,14 +1348,14 @@ namespace tr{
 	{
 
 		std::vector< std::pair< int , int >  > strips;
-		std::vector< std::pair< tr::Point2f , tr::Point2f > > clippedEdgesTemp , initEdges;
+        std::vector< std::pair< Eigen::Vector2d , Eigen::Vector2d > > clippedEdgesTemp , initEdges;
 
-		tr::Point2f end1 , end2;
+        Eigen::Vector2d end1 , end2;
 
 		mCalibration->projectPointU( edge.point1 , camId , end1 );
 		mCalibration->projectPointU( edge.point2 , camId , end2 );
 
-		std::pair< tr::Point2f , tr::Point2f > inititialEdge;
+        std::pair< Eigen::Vector2d , Eigen::Vector2d > inititialEdge;
 
 		inititialEdge.first = end1;
 		inititialEdge.second = end2;
@@ -1709,20 +1709,20 @@ namespace tr{
 
 				mCalibration->projectHomogeneous( infinitePoint , camId2 , infiniteProjHmg  );
 
-				tr::Point2f infiniteEnd;
+                Eigen::Vector2d infiniteEnd;
 
 				infiniteEnd.x() = infiniteProjHmg( 0 ) / infiniteProjHmg( 2 );
 				infiniteEnd.y() = infiniteProjHmg( 1 ) / infiniteProjHmg( 2 );
 
 				std::vector< std::pair< int , int >  > strips;
-				std::vector< std::pair< tr::Point2f , tr::Point2f > > clippedEdgesTemp;
+                std::vector< std::pair< Eigen::Vector2d , Eigen::Vector2d > > clippedEdgesTemp;
 
-				tr::Point2f epipolef;
+                Eigen::Vector2d epipolef;
 
 				epipolef.x() = epipole.x();
 				epipolef.y() = epipole.y();
 
-				std::pair< tr::Point2f , tr::Point2f > initialEdge;
+                std::pair< Eigen::Vector2d , Eigen::Vector2d > initialEdge;
 
 				initialEdge.first = epipolef;
 				initialEdge.second = infiniteEnd;
@@ -2286,7 +2286,7 @@ namespace tr{
 
 
 	void EPVH::generatePolyData( std::vector< std::vector< cv::Point2f > >& contours , 
-		std::vector< std::pair< tr::Point2f , tr::Point2f > > &edges, 
+        std::vector< std::pair< Eigen::Vector2d , Eigen::Vector2d > > &edges,
 		vtkSmartPointer< vtkPolyData >& edgePolyData )
 	{
 
@@ -2322,7 +2322,7 @@ namespace tr{
 				cv::Point2f &pt1f = contours[ ee1 ][ ee2 ];
 				cv::Point2f &pt2f = contours[ ee1 ][ ( ee2 + 1 ) % contours[ ee1 ].size() ];
 
-				tr::Point3d pt1( pt1f.x , pt1f.y , 0 ) , pt2( pt2f.x , pt2f.y , 0 );
+                Eigen::Vector3d pt1( pt1f.x , pt1f.y , 0 ) , pt2( pt2f.x , pt2f.y , 0 );
 
 				int id1 = points->InsertNextPoint( pt1.data() );
 				int id2 = points->InsertNextPoint( pt2.data() );
@@ -2343,10 +2343,10 @@ namespace tr{
 			for( int ee = 0; ee < edges.size(); ee++ )
 			{
 
-				tr::Point2f &pt1f = edges[ ee ].first;
-				tr::Point2f &pt2f = edges[ ee ].second;
+                Eigen::Vector2d &pt1f = edges[ ee ].first;
+                Eigen::Vector2d &pt2f = edges[ ee ].second;
 
-				tr::Point3d pt1( pt1f.x() , pt1f.y() , 0 ) , pt2( pt2f.x() , pt2f.y() , 0 );
+                Eigen::Vector3d pt1( pt1f.x() , pt1f.y() , 0 ) , pt2( pt2f.x() , pt2f.y() , 0 );
 
 				int id1 = points->InsertNextPoint( pt1.data() );
 				int id2 = points->InsertNextPoint( pt2.data() );
@@ -2373,7 +2373,7 @@ namespace tr{
 
 
 	void EPVH::generatePolyData(
-		vector< vector< cv::Point2f > >& contours, vector< pair< tr::Point2f, tr::Point2f > >& edges, vtkSmartPointer< vtkPolyData >& edgePolyData, vector< pair< int, int > >& selectedPolygonSegments, vector< cv::Vec3f >& selectedSegmentColors
+        vector< vector< cv::Point2f > >& contours, vector< pair< Eigen::Vector2d, Eigen::Vector2d > >& edges, vtkSmartPointer< vtkPolyData >& edgePolyData, vector< pair< int, int > >& selectedPolygonSegments, vector< cv::Vec3f >& selectedSegmentColors
 		)
 	{
 		vtkSmartPointer<vtkUnsignedCharArray> colors = vtkSmartPointer<vtkUnsignedCharArray>::New();    
@@ -2430,7 +2430,7 @@ namespace tr{
 					cv::Point2f &pt1f = contours[ ee1 ][ ee2 ];
 					cv::Point2f &pt2f = contours[ ee1 ][ ( ee2 + 1 ) % contours[ ee1 ].size() ];
 
-					tr::Point3d pt1( pt1f.x , pt1f.y , 0 ) , pt2( pt2f.x , pt2f.y , 0 );
+                    Eigen::Vector3d pt1( pt1f.x , pt1f.y , 0 ) , pt2( pt2f.x , pt2f.y , 0 );
 
 					int id1 = points->InsertNextPoint( pt1.data() );
 					int id2 = points->InsertNextPoint( pt2.data() );
@@ -2451,10 +2451,10 @@ namespace tr{
 				for( int ee = 0; ee < edges.size(); ee++ )
 				{
 
-					tr::Point2f &pt1f = edges[ ee ].first;
-					tr::Point2f &pt2f = edges[ ee ].second;
+                    Eigen::Vector2d &pt1f = edges[ ee ].first;
+                    Eigen::Vector2d &pt2f = edges[ ee ].second;
 
-					tr::Point3d pt1( pt1f.x() , pt1f.y() , 0 ) , pt2( pt2f.x() , pt2f.y() , 0 );
+                    Eigen::Vector3d pt1( pt1f.x() , pt1f.y() , 0 ) , pt2( pt2f.x() , pt2f.y() , 0 );
 
 					int id1 = points->InsertNextPoint( pt1.data() );
 					int id2 = points->InsertNextPoint( pt2.data() );
@@ -2478,7 +2478,7 @@ namespace tr{
 	}
 
 
-	void EPVH::display( std::vector< std::vector< cv::Point2f > >& contours, std::vector< std::pair< tr::Point2f, tr::Point2f > >& edges)
+    void EPVH::display( std::vector< std::vector< cv::Point2f > >& contours, std::vector< std::pair< Eigen::Vector2d, Eigen::Vector2d > >& edges)
 	{
 		vtkSmartPointer< vtkPolyData > edgePolyData = vtkSmartPointer< vtkPolyData >::New();
 
@@ -2487,7 +2487,7 @@ namespace tr{
 		tr::Display3DRoutines::displayPolyData( edgePolyData );
 	}
 
-	void EPVH::displayWithColor( int camId, vector< vector< cv::Point2f > >& contours, vector< pair< tr::Point2f, tr::Point2f > >& edges)
+    void EPVH::displayWithColor( int camId, vector< vector< cv::Point2f > >& contours, vector< pair< Eigen::Vector2d, Eigen::Vector2d > >& edges)
 	{
 		vtkSmartPointer< vtkPolyData > edgePolyData = vtkSmartPointer< vtkPolyData >::New();
 
@@ -2498,14 +2498,14 @@ namespace tr{
 
 
 
-	double EPVH::clipWithGenerator(tr::Point3d& p1, tr::Point3d& p2, int camId, int contourId, int stripId)
+    double EPVH::clipWithGenerator(Eigen::Vector3d& p1, Eigen::Vector3d& p2, int camId, int contourId, int stripId)
 	{
 
 		tr::Generator *gen =  mGenerators[ camId ][ contourId ][ stripId ];
 
-		tr::Point3d &n = gen->normal;
+        Eigen::Vector3d &n = gen->normal;
 
-		tr::Point3d camCenter;
+        Eigen::Vector3d camCenter;
 
 		mCalibration->get_camera_center( camId , camCenter );
 
@@ -2532,9 +2532,9 @@ namespace tr{
 
 		tr::Generator *gen =  mGenerators[ camId ][ contourId ][ stripId ];
 
-		tr::Point3d &n = gen->normal;
+        Eigen::Vector3d &n = gen->normal;
 
-		tr::Point3d camCenter;
+        Eigen::Vector3d camCenter;
 
 		mCalibration->get_camera_center( camId , camCenter );
 

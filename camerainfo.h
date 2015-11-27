@@ -25,12 +25,22 @@ class CameraInfo
 {
   
   std::vector< Eigen::Matrix< float , 3 , 4 > > mProjectionMatrices;
+  std::vector< Eigen::Matrix3f > mInvProjectionMatrices;
   std::vector< Eigen::Vector3f > mCameraCenters;
+
+  std::vector< cv::Size > mImageDims;
   
 
   public:
 
     CameraInfo();
+
+    int get_image_width( int camId );
+    int get_image_height( int camId );
+
+    void projectPoint();
+
+    void getRay( int camId , const Eigen::Vector2d& imagePos , Eigen::Vector3d& rayDir  );
 
     
     ~CameraInfo();
