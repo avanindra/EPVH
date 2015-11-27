@@ -14,7 +14,7 @@ set( EPVH_LINK_LIBRARIES ${OpenCV_LIBS} )
 
 include_directories(  ${EPVH_INCLUDE_DIRS} ${OpenCV_INCLUDE_DIRS}  )
 
-add_library( epvh basevh.cpp camerainfo.cpp epvh.cpp segmentclipper.cpp silhouette.cpp )
+add_library( epvh basevh.cpp camerainfo.cpp epvh.cpp segmentclipper.cpp silhouette.cpp contourio.cpp )
 
 
 add_subdirectory(externalinclues)
