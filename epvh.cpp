@@ -299,11 +299,11 @@ namespace tr{
 
 
 
-			//vtkSmartPointer< vtkPolyData > edgeData = vtkSmartPointer< vtkPolyData >::New();
+//            vtkSmartPointer< vtkPolyData > edgeData = vtkSmartPointer< vtkPolyData >::New();
 
-			//generatePolyData(mEdges, edgeData);
+//            generatePolyData(mEdges, edgeData);
 
-			//tr::Display3DRoutines::displayPolyData(edgeData);
+//            tr::Display3DRoutines::displayPolyData(edgeData);
 
 		}
 
@@ -993,6 +993,15 @@ namespace tr{
 
 							polygon->Reset();
 
+                            if( !vNext )
+                            {
+                                polygon->Reset();
+
+                                break;
+
+                             //std::cout<<" connection error "<<std::endl;
+                            }
+
 							if( vNext->mLeftGen == gen || vNext->mRightGen == gen || vNext->mGen == gen )
 							{ 
 								vertexUsedFlag[ vert->mId ] = true;
@@ -1017,14 +1026,25 @@ namespace tr{
 									bool genCase = true;
 
 									if( mVertexChainCounter > 5000 )
-										return false;
+                                    {
+                                        polygon->Reset();
 
+                                        break;
+
+                                     }
 									polygon->InsertNextId( currentVertex->mId );
 
 									if( currentVertex->mRight != prevVertex  )
 									{ 
 										tr::Vertex *v = currentVertex->mRight;
+                                        if( !v )
+                                        {
+                                            polygon->Reset();
 
+                                            break;
+
+                                         //std::cout<<" connection error "<<std::endl;
+                                        }
 
 
 										vertexUsedFlag[ currentVertex->mId ] = true;	  
@@ -1050,10 +1070,14 @@ namespace tr{
 
 										tr::Vertex *v = currentVertex->mLeft;	  
 
-										//if( !v )
-										//{
-										// std::cout<<" connection error "<<std::endl;
-										//}
+                                        if( !v )
+                                        {
+                                            polygon->Reset();
+
+                                            break;
+
+                                         //std::cout<<" connection error "<<std::endl;
+                                        }
 
 										if(  v->mRightGen == gen || v->mLeftGen == gen || v->mGen == gen)
 										{	    
@@ -1096,7 +1120,7 @@ namespace tr{
 								}
 
 
-
+                                if( polygon->GetNumberOfIds() >= 3 )
 								polyData->InsertNextCell( VTK_POLYGON , polygon );
 							}
 

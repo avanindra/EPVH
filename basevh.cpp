@@ -385,7 +385,7 @@ void BaseVH::buildPrimitives( int camId , std::vector< Eigen::Vector2d >& contou
 
 		if (numPts > 20)
 		{
-			cv::approxPolyDP(allContours[cc], allContours[cc], 1.0, true);
+            cv::approxPolyDP(allContours[cc], allContours[cc], 1.0, true);
 		}
 	}
 
