@@ -28,9 +28,18 @@
 
 
 #include "contourio.h"
+#include "fstream"
+#include "iostream"
+#include "epvh.h"
+#include "camerainfo.h"
 
+#ifdef WIN32
+#include "conio.h"
+#endif
 
-void readContours( std::string& contourFilePath , std::vector< std::vector< Eigen::Vector3d > >& contours );
+void readContours( std::string& contourFilePath , std::vector< std::vector< Eigen::Vector2d > >& contours );
+
+void readCameras(std::string& cameraFilePath, std::vector< Eigen::Matrix< double, 3, 4 > >& projectionMatrices);
 
 int main( int argc , char **argv )
 {
@@ -40,21 +49,136 @@ int main( int argc , char **argv )
   std::string contourFilePath = DATASET_DIR + std::string("/alien-contour.txt");
   std::string cameraFilepPath = DATASET_DIR + std::string("/alien-camera.txt");
 
+  std::vector< std::vector< Eigen::Vector2d > > contours;
+  std::vector< Eigen::Matrix< double, 3, 4 > > projectionMatrices;
 
+  readContours( contourFilePath , contours );
+  readCameras(cameraFilepPath, projectionMatrices);
+
+  std::cout << contours.size() << " " << projectionMatrices.size() << std::endl;
+
+  CameraInfo cameraInfo;
+  tr::EPVH epvh;
+
+  epvh.loadCameraInfo(&cameraInfo);
+
+  cameraInfo.mProjectionMatrices = projectionMatrices;
+  int numCams = projectionMatrices.size();
+
+  cameraInfo.mCameraCenters.resize(numCams);
+  cameraInfo.mInvProjectionMatrices.resize(numCams);
+
+  for (int cc = 0; cc < numCams; cc++)
+  {
+	  Eigen::Vector3d camCenter = -projectionMatrices[cc].block(0, 0, 3, 3).inverse() * projectionMatrices[cc].block(0, 3, 3, 1);
+
+	  cameraInfo.mCameraCenters[cc] = camCenter;
+
+	  cameraInfo.mInvProjectionMatrices[cc] = projectionMatrices[cc].block(0, 0, 3, 3).inverse();
+  }
+
+
+
+#ifdef WIN32
+  getch();
+#endif
   
   return 0;
 }
 
 
-void readContours( std::string& contourFilePath , std::vector< std::vector< Eigen::Vector3d > >& contours )
+void readContours( std::string& contourFilePath , std::vector< std::vector< Eigen::Vector2d > >& contours )
 {
+	std::fstream fs;
 
+	fs.open( contourFilePath , std::fstream::in | std::fstream::out | std::fstream::app );
+
+	int numLines = 0;
+
+	if (fs.is_open())
+	{
+		std::string str;
+
+		
+
+		while (!fs.eof())
+		{
+			std::string line1, line2;
+
+			if (std::getline(fs, line1) && std::getline(fs, line2) && std::getline(fs, str))
+			{
+			
+
+				int camId, numPoints;
+
+				std::stringstream sstr1(line1);
+
+				sstr1 >> camId >> numPoints;
+
+				std::stringstream sstr2(line2);
+
+				std::vector< Eigen::Vector2d > contour(numPoints);
+
+				for ( int pp = 0; pp < numPoints; pp++ )
+				{
+					sstr2 >> contour[pp](0) >> contour[pp](1);
+				}
+
+
+				contours.push_back( contour );
+			}
+			else
+			{
+				break;
+			}
+
+		}
+	}
+	else
+	{
+		std::cout << " error opening file "<< contourFilePath << std::endl;
+	}
+
+
+	
+	std::cout << " reading completed " <<numLines<< std::endl;
 
 }
 
 
-void readCameras( std::string& cameraFilePath , std::vector< Eigen::Matrix< float , 3 , 4 > >& projectionMatrices )
+void readCameras( std::string& cameraFilePath , std::vector< Eigen::Matrix< double , 3 , 4 > >& projectionMatrices )
 {
+	std::fstream fs;
 
+	fs.open(cameraFilePath, std::fstream::in | std::fstream::out | std::fstream::app);
+
+	int numLines = 0;
+
+	if (fs.is_open())
+	{
+		std::string str;
+
+		while (!fs.eof())
+		{
+			std::string line1, line2 , line3 , line4;
+
+			if (std::getline(fs, line1) && std::getline(fs, line2) && std::getline(fs, line3) && std::getline(fs, line4))
+			{
+				Eigen::Matrix< double, 3, 4 > projMat;
+
+				std::stringstream sstr1(line1), sstr2(line2), sstr3(line3);
+
+				sstr1 >> projMat(0, 0) >> projMat(0, 1) >> projMat(0, 2) >> projMat(0, 3);
+				sstr2 >> projMat(1, 0) >> projMat(1, 1) >> projMat(1, 2) >> projMat(1, 3);
+				sstr3 >> projMat(2, 0) >> projMat(2, 1) >> projMat(2, 2) >> projMat(2, 3);
+
+				projectionMatrices.push_back(projMat);
+			}
+			else
+			{
+				break;
+			}
+		}
+	}
 
 }

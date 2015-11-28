@@ -18,6 +18,11 @@
 #include "camerainfo.h"
 
 
+CameraInfo::CameraInfo() : mObjectSilhouettes(mDummySilhouettes)
+{
+
+}
+
 CameraInfo::CameraInfo(std::vector< tr::Silhouette >& silhouettes) : mObjectSilhouettes( silhouettes )
 {
 

@@ -35,11 +35,13 @@ public:
 
   std::vector< cv::Size > mImageDims;
 
-  std::vector< tr::Silhouette > &mObjectSilhouettes;
+  std::vector< tr::Silhouette > &mObjectSilhouettes , mDummySilhouettes;
   std::vector< std::string > mObjectSilhouettePaths;
   
 
   public:
+
+	  CameraInfo();
 
 	  CameraInfo( std::vector< tr::Silhouette >& silhouettes  );
 
