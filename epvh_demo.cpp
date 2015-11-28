@@ -114,7 +114,7 @@ int main( int argc , char **argv )
 
   std::vector< Eigen::Vector3d > colors(numCams, Eigen::Vector3d(0, 1, 0));
 
-  tr::Display3DRoutines::displayPointSet(cameraInfo.mCameraCenters, colors);
+  //tr::Display3DRoutines::displayPointSet(cameraInfo.mCameraCenters, colors);
 
   std::cout << " number of silhouette cams : " << silhouetteCameras.size() << std::endl;
 
