@@ -254,6 +254,8 @@ namespace tr{
 
 		for( int ss = 0; ss < numCams; ss++ )
 		{
+			std::cout << " camera : " << ss << std::endl;
+
 			int sCamId = mSilhouetteCameras[ ss ];
 
 			std::vector< std::vector< tr::Edge > > edges1 ;
@@ -2021,9 +2023,15 @@ namespace tr{
 	{
 		buildPrimitives();
 
+		std::cout << " primitives built " << std::endl;
+
 		computeGeneratorNormals();
 
+		std::cout << " generator normals computed " << std::endl;
+
 		buildClippers();
+
+		std::cout << " clippers built " << std::endl;
 
 		int numCams = mCalibration->get_cam_count();
 
@@ -2031,9 +2039,15 @@ namespace tr{
 
 		initiateWithViewingEdges();
 
+		std::cout << " viewing edges initialized " << std::endl;
+
 		associateViewingEdgesToGenerators();
 
+		std::cout << " viewing edges associated with generators " << std::endl;
+
 		initializeVertices();
+
+		std::cout << " vertices initialized , statrting polygon computation " << std::endl;
 
 		int id = 0;
 
@@ -2070,6 +2084,8 @@ namespace tr{
 
 			id++;
 		}
+
+		std::cout << " visual hull computed " << std::endl;
 
 
 		return validConnections;  

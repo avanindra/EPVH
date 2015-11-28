@@ -70,6 +70,8 @@ int main( int argc , char **argv )
   cameraInfo.mInvProjectionMatrices.resize(numCams);
   cameraInfo.mImageDims.resize(numCams);
 
+  std::vector< int > silhouetteCameras( numCams );
+
   for (int cc = 0; cc < numCams; cc++)
   {
 	  Eigen::Vector3d camCenter = -projectionMatrices[cc].block(0, 0, 3, 3).inverse() * projectionMatrices[cc].block(0, 3, 3, 1);
@@ -89,9 +91,13 @@ int main( int argc , char **argv )
 
 	  cameraInfo.mImageDims[cc] = im.size();
 
+	  silhouetteCameras[cc] = cc;
+
   }
 
   cameraInfo.mContours = contours;
+
+  epvh.setSilhouetteCameras(silhouetteCameras);
 
   epvh.compute();
 

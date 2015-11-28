@@ -151,7 +151,7 @@ void BaseVH::buildPrimitives()
     {
 		int sCamId = mSilhouetteCameras[ sc ];
 
-		buildPrimitives( sCamId );
+		buildPrimitives( sCamId , mCalibration->mContours[ sCamId ]  );
     }
 
 }
