@@ -136,6 +136,8 @@ protected:
   double clipWithGenerator( Eigen::Vector3d &p1 , Eigen::Vector3d &p2 , int camId , int contourId , int stripId );
  
   double clipRayWithGenerator( Eigen::Vector3d &o , tr::Vector3d &r , int camId , int contourId , int stripId  );
+
+  void generatePolyData(std::vector< std::vector< tr::Edge > >& edges, vtkSmartPointer< vtkPolyData >& edgePolyData);
   
 public:
     

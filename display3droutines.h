@@ -30,6 +30,7 @@
 #define TR_DISPLAY3DROUTINES_H
 
 #include "vtkincludes.h"
+#include "eigenincludes.h"
 //#include <carve_interface/carvepolyhedron.h>
 
 
@@ -45,6 +46,8 @@ public:
   static void displayPolyData( vtkSmartPointer< vtkPolyData > mesh ); 
   
   //static void displayCarvePolyhedron( CarvePolyhedron &polyhedron );
+
+  static void displayPointSet(std::vector< Eigen::Vector3d >& vertices, std::vector< Eigen::Vector3d >& colors);
     
   virtual ~Display3DRoutines();
   

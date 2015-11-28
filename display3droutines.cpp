@@ -166,6 +166,46 @@ void Display3DRoutines::displayPolyData( vtkSmartPointer< vtkPolyData > mesh )
 //} 
 
 
+void Display3DRoutines::displayPointSet(std::vector< Eigen::Vector3d >& vertices, std::vector< Eigen::Vector3d >& colors)
+{
+	vtkSmartPointer< vtkPolyData > dataSet = vtkSmartPointer< vtkPolyData >::New();
+	vtkSmartPointer< vtkPoints > points = vtkSmartPointer< vtkPoints >::New();
+	vtkSmartPointer< vtkUnsignedCharArray > vColors = vtkSmartPointer< vtkUnsignedCharArray >::New();
+
+	int numVerts = vertices.size();
+
+	points->Allocate(numVerts);
+	dataSet->Allocate(numVerts);
+
+	vColors->SetNumberOfComponents(3);
+	vColors->SetName("Colors");
+
+	// Add the three colors we have created to the array
+	vtkSmartPointer< vtkIdList > vert = vtkSmartPointer< vtkIdList >::New();
+
+	int id = 0;
+
+	for (int vv = 0; vv < numVerts; vv++)
+	{
+		unsigned char col[] = { colors[vv](0) * 255, colors[vv](1) * 255, colors[vv](2) * 255 };
+
+		vColors->InsertNextTupleValue(col);
+
+		points->InsertNextPoint(vertices[vv](0), vertices[vv](1), vertices[vv](2));
+
+		vert->Reset();
+
+		vert->InsertNextId(vv);
+
+		dataSet->InsertNextCell(VTK_VERTEX, vert);
+
+	}
+
+	dataSet->SetPoints(points);
+	dataSet->GetPointData()->SetScalars(vColors);
+
+	displayPolyData(dataSet);
+}
 
 Display3DRoutines::~Display3DRoutines()
 {

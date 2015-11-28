@@ -34,6 +34,7 @@
 #include "camerainfo.h"
 #include "opencvincludes.h"
 #include "display3droutines.h"
+#include "vtkTriangleFilter.h"
 
 #ifdef WIN32
 #include "conio.h"
@@ -73,6 +74,8 @@ int main( int argc , char **argv )
 
   std::vector< int > silhouetteCameras;
 
+  
+
   int skip = 0;
 
   for (int cc = 0; cc < numCams; cc++)
@@ -86,13 +89,15 @@ int main( int argc , char **argv )
 	  std::string imagePath;
 
 	  if ( cc < 10 )
-	      imagePath = std::string( DATASET_DIR ) + "/alien-images/000" + std::to_string(cc);
+	      imagePath = std::string( DATASET_DIR ) + "/alien-images/000" + std::to_string(cc) + ".jpg";
 	  else
-		  imagePath = std::string(DATASET_DIR) + "/alien-images/00" + std::to_string(cc);
+		  imagePath = std::string(DATASET_DIR) + "/alien-images/00" + std::to_string(cc) + ".jpg";
 
 	  cv::Mat im = cv::imread(imagePath);
 
 	  cameraInfo.mImageDims[cc] = im.size();
+
+	  //std::cout << im.size() << std::endl;
 
 
 	  //if ( skip == 0 )
@@ -107,6 +112,10 @@ int main( int argc , char **argv )
 
   } 
 
+  std::vector< Eigen::Vector3d > colors(numCams, Eigen::Vector3d(0, 1, 0));
+
+  tr::Display3DRoutines::displayPointSet(cameraInfo.mCameraCenters, colors);
+
   std::cout << " number of silhouette cams : " << silhouetteCameras.size() << std::endl;
 
   cameraInfo.mContours = contours;
@@ -118,6 +127,14 @@ int main( int argc , char **argv )
   vtkSmartPointer< vtkPolyData > polygons = vtkSmartPointer< vtkPolyData >::New();
 
   epvh.generatePolygons(polygons);
+
+  vtkSmartPointer< vtkTriangleFilter > triangulator = vtkSmartPointer< vtkTriangleFilter >::New();
+
+  triangulator->SetInputData(polygons);
+
+  triangulator->Update();
+
+  polygons->DeepCopy( triangulator->GetOutput() );
 
   tr::Display3DRoutines::displayPolyData(polygons);
 
@@ -211,7 +228,7 @@ void readCameras( std::string& cameraFilePath , std::vector< Eigen::Matrix< doub
 				std::stringstream sstr1(line1), sstr2(line2), sstr3(line3);
 
 				sstr1 >> projMat(0, 0) >> projMat(0, 1) >> projMat(0, 2) >> projMat(0, 3);
-				sstr2 >> projMat(1, 0) >> projMat(1, 1) >> projMat(1, 2) >> projMat(1, 3);
+				sstr2>> projMat(1, 0) >> projMat(1, 1) >> projMat(1, 2) >> projMat(1, 3);
 				sstr3 >> projMat(2, 0) >> projMat(2, 1) >> projMat(2, 2) >> projMat(2, 3);
 
 				projectionMatrices.push_back(projMat);

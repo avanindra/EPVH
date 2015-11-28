@@ -353,22 +353,7 @@ void BaseVH::buildPrimitives( int camId , std::vector< Eigen::Vector2d >& contou
 
 	//mCalibration->silhouette(camId).getHierarchyContours(allContours, contourHierarchy);
 
-	//int numAllContours = allContours.size();
 
-	//filterContoursByEdgeAngle(allContours);
-
-	//mScale[camId] = 1.0;
-	//mInvScale[camId] = 1.0;
-
-	//for (int cc = 0; cc < numAllContours; cc++)
-	//{
-	//	int numPts = allContours[cc].size();
-
-	//	if (numPts > 20)
-	//	{
-	//		cv::approxPolyDP(allContours[cc], allContours[cc], 2.0, true);
-	//	}
-	//}
 
 	int npts = contour.size();
 
@@ -382,7 +367,27 @@ void BaseVH::buildPrimitives( int camId , std::vector< Eigen::Vector2d >& contou
 		allContours[0][pp].y = contour[pp](1);
 	}
 
+	contourHierarchy[ 0 ][0] = -1;
+	contourHierarchy[0][1] = -1;
+	contourHierarchy[0][2] = -1;
+	contourHierarchy[0][3] = -1;
 
+	int numAllContours = allContours.size();
+
+	//filterContoursByEdgeAngle(allContours);
+
+	mScale[camId] = 1.0;
+	mInvScale[camId] = 1.0;
+
+	for (int cc = 0; cc < numAllContours; cc++)
+	{
+		int numPts = allContours[cc].size();
+
+		if (numPts > 20)
+		{
+			cv::approxPolyDP(allContours[cc], allContours[cc], 2.0, true);
+		}
+	}
 
 	mContourHierarchies[camId] = contourHierarchy;
 	mObjectContours[camId] = allContours;

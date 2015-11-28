@@ -252,11 +252,15 @@ namespace tr{
 
 		std::vector< std::vector< tr::Edge > > viewingEdges;
 
+		
+
 		for( int ss = 0; ss < numCams; ss++ )
 		{
 			std::cout << " camera : " << ss << std::endl;
 
 			int sCamId = mSilhouetteCameras[ ss ];
+
+			//displayContour3D(mObjectContours[ss]);
 
 			std::vector< std::vector< tr::Edge > > edges1 ;
 
@@ -293,7 +297,17 @@ namespace tr{
 				}
 			}
 
+
+
+			//vtkSmartPointer< vtkPolyData > edgeData = vtkSmartPointer< vtkPolyData >::New();
+
+			//generatePolyData(mEdges, edgeData);
+
+			//tr::Display3DRoutines::displayPolyData(edgeData);
+
 		}
+
+
 
 	}
 
@@ -1444,6 +1458,8 @@ namespace tr{
 		double w = mCalibration->get_image_width( camId2 );
 		double h = mCalibration->get_image_height( camId2 );
 
+		//std::cout << w << " " << h << std::endl;
+
         Eigen::Vector2d epipole , refPoint( w / 2 , h / 2 );
 
 		Point3d cameraCenter1 , cameraCenter2 , epipoleHmg1 , epipoleHmg2 ;
@@ -2018,6 +2034,73 @@ namespace tr{
 		return intersectedEdgeSet;
 	}
 
+	void EPVH::generatePolyData(std::vector< std::vector< tr::Edge > >& edges, vtkSmartPointer< vtkPolyData >& edgePolyData)
+	{
+
+		vtkSmartPointer<vtkUnsignedCharArray> colors = vtkSmartPointer<vtkUnsignedCharArray>::New();
+
+		colors->SetName("colors");
+		colors->SetNumberOfComponents(3);
+
+		int numEdges = 0;
+
+		for (int ee1 = 0; ee1 < edges.size(); ee1++)
+		{
+			numEdges += edges[ee1].size();
+		}
+
+		vtkSmartPointer< vtkPoints > points = vtkSmartPointer< vtkPoints >::New();
+
+		int numPoints = 2 * numEdges;
+
+		std::vector< std::vector< cv::Vec3f > > colorVecs;
+
+		colorVecs.resize(numEdges);
+
+		points->Allocate(numPoints);
+
+		int numCells = numEdges;
+
+		edgePolyData->Allocate(numCells);
+
+		vtkSmartPointer< vtkIdList > cell = vtkSmartPointer< vtkIdList >::New();
+
+		for (int ee1 = 0; ee1 < edges.size(); ee1++)
+			for (int ee2 = 0; ee2 < edges[ee1].size(); ee2++)
+			{
+				int id1 = points->InsertNextPoint(edges[ee1][ee2].point1.data());
+				int id2 = points->InsertNextPoint(edges[ee1][ee2].point2.data());
+
+				cell->Reset();
+
+				cell->InsertNextId(id1);
+				cell->InsertNextId(id2);
+
+				edgePolyData->InsertNextCell(VTK_LINE, cell);
+
+				Edge &edge = edges[ee1][ee2];
+
+				if ((edge.camLeft == 15 && (edge.stripRight == 188)) || (edge.camLeft == 0 && (edge.stripRight == 48 || edge.stripRight == 49)))
+				{
+					const unsigned char _color[] = { 255, 0, 0 };
+
+					colors->InsertNextTupleValue(_color);
+				}
+				else
+				{
+					const unsigned char _color[] = { 0, 0, 255 };
+
+					colors->InsertNextTupleValue(_color);
+				}
+			}
+
+		edgePolyData->SetPoints(points);
+
+		edgePolyData->GetCellData()->SetScalars(colors);
+	}
+
+
+
 
 	bool EPVH::compute()
 	{
@@ -2042,6 +2125,8 @@ namespace tr{
 		std::cout << " viewing edges initialized " << std::endl;
 
 		associateViewingEdgesToGenerators();
+
+
 
 		std::cout << " viewing edges associated with generators " << std::endl;
 

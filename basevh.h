@@ -39,7 +39,7 @@
 
 namespace tr{
   
-class Generator;  
+struct Generator;  
 
   
  struct Vertex
