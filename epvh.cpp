@@ -2087,8 +2087,11 @@ namespace tr{
 
 		std::cout << " visual hull computed " << std::endl;
 
+	
 
 		return validConnections;  
+
+
 	}
 
 

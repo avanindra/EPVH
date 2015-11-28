@@ -33,6 +33,7 @@
 #include "epvh.h"
 #include "camerainfo.h"
 #include "opencvincludes.h"
+#include "display3droutines.h"
 
 #ifdef WIN32
 #include "conio.h"
@@ -70,7 +71,9 @@ int main( int argc , char **argv )
   cameraInfo.mInvProjectionMatrices.resize(numCams);
   cameraInfo.mImageDims.resize(numCams);
 
-  std::vector< int > silhouetteCameras( numCams );
+  std::vector< int > silhouetteCameras;
+
+  int skip = 0;
 
   for (int cc = 0; cc < numCams; cc++)
   {
@@ -91,15 +94,32 @@ int main( int argc , char **argv )
 
 	  cameraInfo.mImageDims[cc] = im.size();
 
-	  silhouetteCameras[cc] = cc;
 
-  }
+	  //if ( skip == 0 )
+	  silhouetteCameras.push_back( cc );
+
+	  //skip++;
+
+	  //if (skip == 3)
+	  //{
+		 // skip = 0;
+	  //}
+
+  } 
+
+  std::cout << " number of silhouette cams : " << silhouetteCameras.size() << std::endl;
 
   cameraInfo.mContours = contours;
 
   epvh.setSilhouetteCameras(silhouetteCameras);
 
   epvh.compute();
+
+  vtkSmartPointer< vtkPolyData > polygons = vtkSmartPointer< vtkPolyData >::New();
+
+  epvh.generatePolygons(polygons);
+
+  tr::Display3DRoutines::displayPolyData(polygons);
 
 
 #ifdef WIN32
