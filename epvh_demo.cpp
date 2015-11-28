@@ -1,4 +1,4 @@
-   /*
+/*
  * Copyright (c) 2012, avanindra <avanindra.singh@gmail.com>
  * All rights reserved.
  *
@@ -149,9 +149,7 @@ int main( int argc , char **argv )
 
 void readContours( std::string& contourFilePath , std::vector< std::vector< Eigen::Vector2d > >& contours )
 {
-	std::fstream fs;
-
-	fs.open( contourFilePath , std::fstream::in | std::fstream::out | std::fstream::app );
+	std::ifstream fs( contourFilePath );
 
 	int numLines = 0;
 
@@ -207,9 +205,7 @@ void readContours( std::string& contourFilePath , std::vector< std::vector< Eige
 
 void readCameras( std::string& cameraFilePath , std::vector< Eigen::Matrix< double , 3 , 4 > >& projectionMatrices )
 {
-	std::fstream fs;
-
-	fs.open(cameraFilePath, std::fstream::in | std::fstream::out | std::fstream::app);
+	std::ifstream fs (cameraFilePath);
 
 	int numLines = 0;
 
