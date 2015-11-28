@@ -27,9 +27,9 @@
  */
 
 #include "segmentclipper.h"
-#include <utility-2d/math2d.h>
-#include "util/opencvincludes.h"
-#include "utility-3d/display3droutines.h"
+#include <math2d.h>
+#include "opencvincludes.h"
+#include "display3droutines.h"
 #include "vtkPolyData.h"
 #include "vtkIdList.h"
 #include "vtkUnsignedCharArray.h"
@@ -51,7 +51,7 @@ SegmentClipper::SegmentClipper()
 }
 
 
-void SegmentClipper::add( int contourId , int segmentId , tr::Point2f end1 , tr::Point2f end2 )
+void SegmentClipper::add( int contourId , int segmentId , Eigen::Vector2d end1 , Eigen::Vector2d end2 )
 {
   IndexValPair hPair , vPair;
   
@@ -181,10 +181,10 @@ void SegmentClipper::build()
     
     mHorizontalStack[ ee ].push_back( segment );
     
-    tr::Point2f &firstEnd1 = mPolygon[ contourId1 ][ segmentId1  ];
-    tr::Point2f &secondEnd1 = mPolygon[ contourId1 ][ ( segmentId1 + 1 ) % mPolygon[ contourId1 ].size() ];
+    Eigen::Vector2d &firstEnd1 = mPolygon[ contourId1 ][ segmentId1  ];
+    Eigen::Vector2d &secondEnd1 = mPolygon[ contourId1 ][ ( segmentId1 + 1 ) % mPolygon[ contourId1 ].size() ];
     
-    float xMin , xMax;
+    double xMin , xMax;
     
     if( firstEnd1.x() < secondEnd1.x() )
     {
@@ -224,10 +224,10 @@ void SegmentClipper::build()
     
     mVerticalStack[ ee ].push_back( segment2 );
     
-    tr::Point2f &firstEnd2 = mPolygon[ contourId2 ][ segmentId2  ];
-    tr::Point2f &secondEnd2 = mPolygon[ contourId2 ][ ( segmentId2 + 1 ) % mPolygon[ contourId2 ].size() ];
+    Eigen::Vector2d &firstEnd2 = mPolygon[ contourId2 ][ segmentId2  ];
+    Eigen::Vector2d &secondEnd2 = mPolygon[ contourId2 ][ ( segmentId2 + 1 ) % mPolygon[ contourId2 ].size() ];
     
-    float yMin , yMax;
+    double yMin , yMax;
     
     if( firstEnd2.y() < secondEnd2.y() )
     {
@@ -264,15 +264,15 @@ void SegmentClipper::build()
 }
 
 
-bool SegmentClipper::search( tr::Point2f end1 , tr::Point2f end2 , int &index )
+bool SegmentClipper::search( Eigen::Vector2d end1 , Eigen::Vector2d end2 , int &index )
 {
-  float delX = std::abs( end1.x() - end2.x() );
-  float delY = std::abs( end1.y() - end2.y() );
+  double delX = std::abs( end1.x() - end2.x() );
+  double delY = std::abs( end1.y() - end2.y() );
   
   
   if( delX > delY )
   {
-    float yMin = std::min( end1.y() , end2.y() );
+    double yMin = std::min( end1.y() , end2.y() );
     
     index = binarySearch( yMin , mVerticalArray );    
     
@@ -280,7 +280,7 @@ bool SegmentClipper::search( tr::Point2f end1 , tr::Point2f end2 , int &index )
   }
   else
   {
-    float xMin = std::min( end1.x() , end2.x() );
+    double xMin = std::min( end1.x() , end2.x() );
     
     index = binarySearch( xMin , mHorizontalArray );
     
@@ -291,7 +291,7 @@ bool SegmentClipper::search( tr::Point2f end1 , tr::Point2f end2 , int &index )
 
 
 
-int SegmentClipper::binarySearch(float val, const std::vector< IndexValPair >& searchArray)
+int SegmentClipper::binarySearch(double val, const std::vector< IndexValPair >& searchArray)
 {
    int validIndex = -1;
    
@@ -359,7 +359,7 @@ int SegmentClipper::binarySearch(float val, const std::vector< IndexValPair >& s
 
 
 
-bool SegmentClipper::isInsideSegment(tr::Point2f point, std::pair< int, int > strip)
+bool SegmentClipper::isInsideSegment(Eigen::Vector2d point, std::pair< int, int > strip)
 {
   bool isInside = false;
   
@@ -375,16 +375,16 @@ bool SegmentClipper::isInsideSegment(tr::Point2f point, std::pair< int, int > st
     return false;
   }
   
-  tr::Point2f &point1 = mPolygon[ strip.first ][ strip.second ];
-  tr::Point2f &point2 = mPolygon[ strip.first ][ ( strip.second + 1 ) % numContourPoints ];
+  Eigen::Vector2d &point1 = mPolygon[ strip.first ][ strip.second ];
+  Eigen::Vector2d &point2 = mPolygon[ strip.first ][ ( strip.second + 1 ) % numContourPoints ];
   
-  float val = ( point.y() - point1.y() ) * ( point2.x() - point1.x() ) - ( point2.y() - point1.y() ) * ( point.x() - point1.x() );
+  double val = ( point.y() - point1.y() ) * ( point2.x() - point1.x() ) - ( point2.y() - point1.y() ) * ( point.x() - point1.x() );
 
   return ( val < 0 );
 }
 
 
-void SegmentClipper::displaySegments( std::vector< std::pair< tr::Point2f , tr::Point2f >  > &strips )
+void SegmentClipper::displaySegments( std::vector< std::pair< Eigen::Vector2d , Eigen::Vector2d >  > &strips )
 {
   
   
@@ -419,8 +419,8 @@ void SegmentClipper::displaySegments( std::vector< std::pair< tr::Point2f , tr::
     for( int ee2 = 0; ee2 < mPolygon[ ee1 ].size(); ee2++ ) 
   {
     
-    tr::Point2f &pt1f = mPolygon[ ee1 ][ ee2 ];
-    tr::Point2f &pt2f = mPolygon[ ee1 ][ ( ee2 + 1 ) % mPolygon[ ee1 ].size() ];
+    Eigen::Vector2d &pt1f = mPolygon[ ee1 ][ ee2 ];
+    Eigen::Vector2d &pt2f = mPolygon[ ee1 ][ ( ee2 + 1 ) % mPolygon[ ee1 ].size() ];
     
     tr::Point3d pt1( pt1f.x() , pt1f.y() , 0 ) , pt2( pt2f.x() , pt2f.y() , 0 );
     
@@ -443,8 +443,8 @@ void SegmentClipper::displaySegments( std::vector< std::pair< tr::Point2f , tr::
   for( int ee = 0; ee < strips.size(); ee++ )
   {
     
-    tr::Point2f &pt1f = strips[ ee ].first;
-    tr::Point2f &pt2f = strips[ ee ].second;
+    Eigen::Vector2d &pt1f = strips[ ee ].first;
+    Eigen::Vector2d &pt2f = strips[ ee ].second;
     
     tr::Point3d pt1( pt1f.x() , pt1f.y() , 0 ) , pt2( pt2f.x() , pt2f.y() , 0 );
     
@@ -473,7 +473,7 @@ void SegmentClipper::displaySegments( std::vector< std::pair< tr::Point2f , tr::
 }
 
 
-bool SegmentClipper::isInsideForeground( tr::Point2f point )
+bool SegmentClipper::isInsideForeground( Eigen::Vector2d point )
 {    
 
   std::vector< uchar > isUsed( mContourHierarchy.size() , 0 );
@@ -581,11 +581,11 @@ void SegmentClipper::addContours( std::vector< std::vector< cv::Point > > & cont
 
   int offset = 0;
   
-  xMin = std::numeric_limits< float >::max();
-  xMax = std::numeric_limits< float >::min();
+  xMin = std::numeric_limits< double >::max();
+  xMax = std::numeric_limits< double >::min();
   
-  yMin = std::numeric_limits< float >::max();
-  yMax = std::numeric_limits< float >::min();
+  yMin = std::numeric_limits< double >::max();
+  yMax = std::numeric_limits< double >::min();
   
   for( int cc = 0; cc < numContours; cc++ )
   {
@@ -644,11 +644,11 @@ void SegmentClipper::addContours( std::vector< std::vector< cv::Point2f > >& con
   
   mUsedIndices.resize( numContours );
 
-    xMin = std::numeric_limits< float >::max();
-  xMax = std::numeric_limits< float >::min();
+    xMin = std::numeric_limits< double >::max();
+  xMax = std::numeric_limits< double >::min();
   
-  yMin = std::numeric_limits< float >::max();
-  yMax = std::numeric_limits< float >::min();
+  yMin = std::numeric_limits< double >::max();
+  yMax = std::numeric_limits< double >::min();
   
   for( int cc = 0; cc < numContours; cc++ )
   {
@@ -695,7 +695,7 @@ void SegmentClipper::addContours( std::vector< std::vector< cv::Point2f > >& con
 
 
 
-void SegmentClipper::addContours( std::vector< std::vector< tr::Point2f > >& contours)
+void SegmentClipper::addContours( std::vector< std::vector< Eigen::Vector2d > >& contours)
 {
   mPolygon = contours;
  
@@ -703,11 +703,11 @@ void SegmentClipper::addContours( std::vector< std::vector< tr::Point2f > >& con
    
   mUsedIndices.resize( numContours );
    
-  xMin = std::numeric_limits< float >::max();
-  xMax = std::numeric_limits< float >::min();
+  xMin = std::numeric_limits< double >::max();
+  xMax = std::numeric_limits< double >::min();
   
-  yMin = std::numeric_limits< float >::max();
-  yMax = std::numeric_limits< float >::min();
+  yMin = std::numeric_limits< double >::max();
+  yMax = std::numeric_limits< double >::min();
   
   for( int cc = 0; cc < numContours; cc++ )
   {
@@ -757,15 +757,15 @@ void SegmentClipper::setContourHierarchy( std::vector< cv::Vec4i >& contourHiera
 
 
 
-bool intersectionStripPredicate( const std::pair< float , std::pair< int , int >  >  &obj1 , const std::pair< float , std::pair< int , int >  >  &obj2 )
+bool intersectionStripPredicate( const std::pair< double , std::pair< int , int >  >  &obj1 , const std::pair< double , std::pair< int , int >  >  &obj2 )
 {
    return obj1.first > obj2.first;
 }
 
 
 
-bool SegmentClipper::clipSegment2(tr::Point2f end1, tr::Point2f end2, 
-				  std::vector< std::pair< tr::Point2f, tr::Point2f > >& clippedSegments, 
+bool SegmentClipper::clipSegment2(Eigen::Vector2d end1, Eigen::Vector2d end2, 
+				  std::vector< std::pair< Eigen::Vector2d, Eigen::Vector2d > >& clippedSegments, 
 				  std::vector< std::pair< int, int > >& stripIds)
 {
   
@@ -786,7 +786,7 @@ bool SegmentClipper::clipSegment2(tr::Point2f end1, tr::Point2f end2,
   
   int size = mHorizontalArray.size();
   
-  float xMax , xMin , yMax , yMin;
+  double xMax , xMin , yMax , yMin;
   
   if( end1.x() > end2.x() )
   {
@@ -810,7 +810,7 @@ bool SegmentClipper::clipSegment2(tr::Point2f end1, tr::Point2f end2,
     yMin = end1.y();
   }
   
-  std::vector< std::pair< float , std::pair< int , int > >  > clippedPoints;
+  std::vector< std::pair< double , std::pair< int , int > >  > clippedPoints;
   
   if( search( end1 , end2 , index  ) )
   {
@@ -832,8 +832,8 @@ bool SegmentClipper::clipSegment2(tr::Point2f end1, tr::Point2f end2,
 
 	    if( mUsedIndices[ contourId ][ segmentId ] )
 	    {
-	      tr::Point2f &segEnd1 = mPolygon[ contourId ][ segmentId ];
-	      tr::Point2f &segEnd2 = mPolygon[ contourId ][ ( segmentId + 1 ) % mPolygon[ contourId ].size() ];
+	      Eigen::Vector2d &segEnd1 = mPolygon[ contourId ][ segmentId ];
+	      Eigen::Vector2d &segEnd2 = mPolygon[ contourId ][ ( segmentId + 1 ) % mPolygon[ contourId ].size() ];
 	  
 	      mUsedIndices[ contourId ][ segmentId ] = false;
 	  
@@ -842,7 +842,7 @@ bool SegmentClipper::clipSegment2(tr::Point2f end1, tr::Point2f end2,
 	      mUsedStack[ mStackTop ].first = contourId;
 	      mUsedStack[ mStackTop ].second = segmentId;
 	  
-	     float segYMin , segYMax;
+	     double segYMin , segYMax;
 	  
 	     if( segEnd1.y() < segEnd2.y() )
 	     {
@@ -862,7 +862,7 @@ bool SegmentClipper::clipSegment2(tr::Point2f end1, tr::Point2f end2,
 	    segment.first = contourId;
 	    segment.second = segmentId;
 	  
-	    std::pair< float , float > intersection;
+	    std::pair< double , double > intersection;
 	  
 	    //compute the intersection
 	    tr::lineToLineIntersection2D( end1 , end2 , segEnd1 , segEnd2 , intersection );
@@ -872,9 +872,9 @@ bool SegmentClipper::clipSegment2(tr::Point2f end1, tr::Point2f end2,
 			//if( mDisplayInfo )
 			//	std::cout<<" intersection : "<<intersection.first<<" "<<intersection.second<<std::endl;
 
-	      tr::Point2f intersectPoint = end1 * intersection.first  + ( 1 - intersection.first ) * end2;
+	      Eigen::Vector2d intersectPoint = end1 * intersection.first  + ( 1 - intersection.first ) * end2;
 	    
-	      std::pair< float , std::pair< int , int >  > intersectionPoint;
+	      std::pair< double , std::pair< int , int >  > intersectionPoint;
 	    
 	      intersectionPoint.first = intersection.first;
 	    
@@ -917,8 +917,8 @@ bool SegmentClipper::clipSegment2(tr::Point2f end1, tr::Point2f end2,
 	{
 	  
 	  
-	  tr::Point2f &segEnd1 = mPolygon[ contourId ][ segmentId ];
-	  tr::Point2f &segEnd2 = mPolygon[ contourId ][ ( segmentId + 1 ) % mPolygon[ contourId ].size() ];
+	  Eigen::Vector2d &segEnd1 = mPolygon[ contourId ][ segmentId ];
+	  Eigen::Vector2d &segEnd2 = mPolygon[ contourId ][ ( segmentId + 1 ) % mPolygon[ contourId ].size() ];
 	  
 	  mUsedIndices[ contourId ][ segmentId ] = false;
 	  
@@ -927,7 +927,7 @@ bool SegmentClipper::clipSegment2(tr::Point2f end1, tr::Point2f end2,
 	  mUsedStack[ mStackTop ].first = contourId;
 	  mUsedStack[ mStackTop ].second = segmentId;
 	  
-	  float segXMin , segXMax;
+	  double segXMin , segXMax;
 	  
 	  if( segEnd1.x() < segEnd2.x() )
 	  {
@@ -948,7 +948,7 @@ bool SegmentClipper::clipSegment2(tr::Point2f end1, tr::Point2f end2,
 	    segment.first = contourId;
 	    segment.second = segmentId;
 	  
-	    std::pair< float , float > intersection;
+	    std::pair< double , double > intersection;
 	  
 	    //compute the intersection
 	    tr::lineToLineIntersection2D( end1 , end2 , segEnd1 , segEnd2 , intersection );
@@ -959,9 +959,9 @@ bool SegmentClipper::clipSegment2(tr::Point2f end1, tr::Point2f end2,
 			//if( mDisplayInfo )
 			//	std::cout<<" intersection : "<<intersection.first<<" "<<intersection.second<<std::endl;
 
-	      tr::Point2f intersectPoint = end1 * intersection.first  + ( 1 - intersection.first ) * end2;
+	      Eigen::Vector2d intersectPoint = end1 * intersection.first  + ( 1 - intersection.first ) * end2;
 	    
-	      std::pair< float , std::pair< int , int >  > intersectionPoint;
+	      std::pair< double , std::pair< int , int >  > intersectionPoint;
 	    
 	      intersectionPoint.first = intersection.first;
 	    
@@ -998,7 +998,7 @@ bool SegmentClipper::clipSegment2(tr::Point2f end1, tr::Point2f end2,
       stripIds.push_back( std::pair< int , int >( -1 , -1 ) );
       stripIds.push_back( std::pair< int , int >( -1 , -1 ) );
       
-      std::pair< tr::Point2f , tr::Point2f > segment;
+      std::pair< Eigen::Vector2d , Eigen::Vector2d > segment;
 	
       segment.first = end1;
       segment.second = end2;      
@@ -1013,13 +1013,13 @@ bool SegmentClipper::clipSegment2(tr::Point2f end1, tr::Point2f end2,
   
   int numIntersections = clippedPoints.size();
 
-  tr::Point2f prevPoint = end1;
+  Eigen::Vector2d prevPoint = end1;
   
   for( int ii = 0; ii < numIntersections; ii++ )
   {
-    float coeff = clippedPoints[ ii ].first;
+    double coeff = clippedPoints[ ii ].first;
 
-    tr::Point2f currentPoint = end1 * coeff + ( 1 - coeff ) * end2;
+    Eigen::Vector2d currentPoint = end1 * coeff + ( 1 - coeff ) * end2;
     
     if( isInsideSegment( prevPoint , clippedPoints[ ii ].second ) )
     {
@@ -1029,7 +1029,7 @@ bool SegmentClipper::clipSegment2(tr::Point2f end1, tr::Point2f end2,
 	   stripIds.push_back( std::pair< int , int >( -1 , -1 ) );
       }
       
-      std::pair< tr::Point2f , tr::Point2f > segment;
+      std::pair< Eigen::Vector2d , Eigen::Vector2d > segment;
 	
       segment.first = prevPoint;
       segment.second = currentPoint;
@@ -1060,7 +1060,7 @@ bool SegmentClipper::clipSegment2(tr::Point2f end1, tr::Point2f end2,
       if( ii == numIntersections - 1  )
       {
 	    stripIds.push_back( std::pair< int , int >( -1 , -1 ) );	
-	    std::pair< tr::Point2f , tr::Point2f > segment;	
+	    std::pair< Eigen::Vector2d , Eigen::Vector2d > segment;	
 	    segment.first = currentPoint;
 	    segment.second = end2;	
 	    clippedSegments.push_back( segment );
@@ -1077,13 +1077,13 @@ return true;
 }
 
 
-bool SegmentClipper::clipRay(tr::Point2f end1, tr::Point2f dir, std::vector< std::pair< tr::Point2f, tr::Point2f > >& clippedSegments, std::vector< std::pair< int, int > >& stripIds)
+bool SegmentClipper::clipRay(Eigen::Vector2d end1, Eigen::Vector2d dir, std::vector< std::pair< Eigen::Vector2d, Eigen::Vector2d > >& clippedSegments, std::vector< std::pair< int, int > >& stripIds)
 {
   //cv::clipLine();
   
-  tr::Point2f pt1 , pt2;
+  Eigen::Vector2d pt1 , pt2;
   
-  float offset = 5.0;
+  double offset = 5.0;
   
   if( abs( dir.x() ) < abs( dir.y() ) )
   {
@@ -1105,7 +1105,7 @@ bool SegmentClipper::clipRay(tr::Point2f end1, tr::Point2f dir, std::vector< std
   
   if( (pt1 - end1).norm() > (pt2 - end1).norm() )
   {
-    tr::Point2f temp = pt1;
+    Eigen::Vector2d temp = pt1;
     
     pt1 = pt2;
     
@@ -1114,9 +1114,9 @@ bool SegmentClipper::clipRay(tr::Point2f end1, tr::Point2f dir, std::vector< std
   
   offset = 2.0;
   
-  tr::Point2f rpt1( xMin - offset , yMin - offset ) , rpt2( xMax + offset , yMin - offset  ) , rpt3( xMax + offset , yMax + offset ) , rpt4( xMin - offset , yMax + offset );
+  Eigen::Vector2d rpt1( xMin - offset , yMin - offset ) , rpt2( xMax + offset , yMin - offset  ) , rpt3( xMax + offset , yMax + offset ) , rpt4( xMin - offset , yMax + offset );
   
-  std::pair< float , float > i1 , i2 , i3 , i4;
+  std::pair< double , double > i1 , i2 , i3 , i4;
   
   //compute the intersection
   tr::lineToLineIntersection2D( pt1 , pt2 , rpt1 , rpt2 , i1 );
@@ -1165,13 +1165,13 @@ bool SegmentClipper::clipRay(tr::Point2f end1, tr::Point2f dir, std::vector< std
       d2 = intersections[ 0 ];
     }
     
-    tr::Point2f clipEnd1 = pt1 * d1 + pt2 * ( 1 - d1 );
-    tr::Point2f clipEnd2 = pt1 * d2 + pt2 * ( 1 - d2 );
+    Eigen::Vector2d clipEnd1 = pt1 * d1 + pt2 * ( 1 - d1 );
+    Eigen::Vector2d clipEnd2 = pt1 * d2 + pt2 * ( 1 - d2 );
     
-    std::vector< std::pair< tr::Point2f , tr::Point2f > > initialStrips;
+    std::vector< std::pair< Eigen::Vector2d , Eigen::Vector2d > > initialStrips;
     
     
-    std::pair< tr::Point2f , tr::Point2f > strip;
+    std::pair< Eigen::Vector2d , Eigen::Vector2d > strip;
     
     strip.first = clipEnd1;
     strip.second = clipEnd2;
@@ -1194,8 +1194,8 @@ bool SegmentClipper::clipRay(tr::Point2f end1, tr::Point2f dir, std::vector< std
 
 
 
-float SegmentClipper::firstClip(  tr::Point2f end1 , tr::Point2f end2 , 
-				                  tr::Point2f& clippedEnd, std::pair< int, int >& strip  )
+double SegmentClipper::firstClip(  Eigen::Vector2d end1 , Eigen::Vector2d end2 , 
+				                  Eigen::Vector2d& clippedEnd, std::pair< int, int >& strip  )
 {
   
  while( mStackTop >= 0 )
@@ -1211,13 +1211,13 @@ float SegmentClipper::firstClip(  tr::Point2f end1 , tr::Point2f end2 ,
   strip.first = -1;
   strip.second = -1;
     
-  clippedEnd = tr::Point2f( -1 , -1 );
+  clippedEnd = Eigen::Vector2d( -1 , -1 );
   
   int index = -1;
   
   int size = mHorizontalArray.size();
   
-  float xMax , xMin , yMax , yMin;
+  double xMax , xMin , yMax , yMin;
   
   if( end1.x() > end2.x() )
   {
@@ -1241,7 +1241,7 @@ float SegmentClipper::firstClip(  tr::Point2f end1 , tr::Point2f end2 ,
     yMin = end1.y();
   }
   
-  std::vector< std::pair< float , std::pair< int , int > >  > clippedPoints;
+  std::vector< std::pair< double , std::pair< int , int > >  > clippedPoints;
   
   if( search( end1 , end2 , index  ) )
   {
@@ -1266,8 +1266,8 @@ float SegmentClipper::firstClip(  tr::Point2f end1 , tr::Point2f end2 ,
 	
 	if( mUsedIndices[ contourId ][ segmentId ] )
 	{
-	  tr::Point2f &segEnd1 = mPolygon[ contourId ][ segmentId ];
-	  tr::Point2f &segEnd2 = mPolygon[ contourId ][ ( segmentId + 1 ) % mPolygon[ contourId ].size() ];
+	  Eigen::Vector2d &segEnd1 = mPolygon[ contourId ][ segmentId ];
+	  Eigen::Vector2d &segEnd2 = mPolygon[ contourId ][ ( segmentId + 1 ) % mPolygon[ contourId ].size() ];
 	  
 	  mUsedIndices[ contourId ][ segmentId ] = false;
 	  
@@ -1276,7 +1276,7 @@ float SegmentClipper::firstClip(  tr::Point2f end1 , tr::Point2f end2 ,
 	  mUsedStack[ mStackTop ].first = contourId;
 	  mUsedStack[ mStackTop ].second = segmentId;
 	  
-	  float segYMin , segYMax;
+	  double segYMin , segYMax;
 	  
 	  if( segEnd1.y() < segEnd2.y() )
 	  {
@@ -1296,16 +1296,16 @@ float SegmentClipper::firstClip(  tr::Point2f end1 , tr::Point2f end2 ,
 	    segment.first = contourId;
 	    segment.second = segmentId;
 	  
-	    std::pair< float , float > intersection;
+	    std::pair< double , double > intersection;
 	  
 	    //compute the intersection
 	    tr::lineToLineIntersection2D( end1 , end2 , segEnd1 , segEnd2 , intersection );
 	  
 	    if( TR_VALID_INTERSECTION( intersection ) )
 	    {
-	      tr::Point2f intersectPoint = end1 * intersection.first  + ( 1 - intersection.first ) * end2;
+	      Eigen::Vector2d intersectPoint = end1 * intersection.first  + ( 1 - intersection.first ) * end2;
 	    
-	      std::pair< float , std::pair< int , int >  > intersectionPoint;
+	      std::pair< double , std::pair< int , int >  > intersectionPoint;
 	    
 	      intersectionPoint.first = intersection.first;
 	    
@@ -1351,8 +1351,8 @@ float SegmentClipper::firstClip(  tr::Point2f end1 , tr::Point2f end2 ,
 	{
 	  
 	  
-	  tr::Point2f &segEnd1 = mPolygon[ contourId ][ segmentId ];
-	  tr::Point2f &segEnd2 = mPolygon[ contourId ][ ( segmentId + 1 ) % mPolygon[ contourId ].size() ];
+	  Eigen::Vector2d &segEnd1 = mPolygon[ contourId ][ segmentId ];
+	  Eigen::Vector2d &segEnd2 = mPolygon[ contourId ][ ( segmentId + 1 ) % mPolygon[ contourId ].size() ];
 	  
 	  mUsedIndices[ contourId ][ segmentId ] = false;
 	  
@@ -1361,7 +1361,7 @@ float SegmentClipper::firstClip(  tr::Point2f end1 , tr::Point2f end2 ,
 	  mUsedStack[ mStackTop ].first = contourId;
 	  mUsedStack[ mStackTop ].second = segmentId;
 	  
-	  float segXMin , segXMax;
+	  double segXMin , segXMax;
 	  
 	  if( segEnd1.x() < segEnd2.x() )
 	  {
@@ -1382,16 +1382,16 @@ float SegmentClipper::firstClip(  tr::Point2f end1 , tr::Point2f end2 ,
 	    segment.first = contourId;
 	    segment.second = segmentId;
 	  
-	    std::pair< float , float > intersection;
+	    std::pair< double , double > intersection;
 	  
 	    //compute the intersection
 	    tr::lineToLineIntersection2D( end1 , end2 , segEnd1 , segEnd2 , intersection );
 	  
 	    if( TR_VALID_INTERSECTION( intersection ) )
 	    {
-	      tr::Point2f intersectPoint = end1 * intersection.first  + ( 1 - intersection.first ) * end2;
+	      Eigen::Vector2d intersectPoint = end1 * intersection.first  + ( 1 - intersection.first ) * end2;
 	    
-	      std::pair< float , std::pair< int , int >  > intersectionPoint;
+	      std::pair< double , std::pair< int , int >  > intersectionPoint;
 	    
 	      intersectionPoint.first = intersection.first;
 	    
@@ -1414,7 +1414,7 @@ float SegmentClipper::firstClip(  tr::Point2f end1 , tr::Point2f end2 ,
     }
   }
   
-  tr::Point2f prevPoint = end1;
+  Eigen::Vector2d prevPoint = end1;
   
   //if( mDisplayInfo )
   //  std::cout<<" num clipped points : "<<clippedPoints.size()<<std::endl;
@@ -1423,13 +1423,13 @@ float SegmentClipper::firstClip(  tr::Point2f end1 , tr::Point2f end2 ,
   {
     std::sort( clippedPoints.begin() , clippedPoints.end() , intersectionStripPredicate  );
     
-    float coeff = -1;
+    double coeff = -1;
     
     for( int ii = 0; ii < clippedPoints.size(); ii++ )
     {
       coeff = clippedPoints[ ii ].first;
       
-      tr::Point2f currentPoint = end1 * coeff + ( 1 - coeff ) * end2;
+      Eigen::Vector2d currentPoint = end1 * coeff + ( 1 - coeff ) * end2;
       
       if( isInsideSegment( prevPoint , clippedPoints[ ii ].second ) )
       {

@@ -27,16 +27,11 @@
  */
 
 #include "basevh.h"
-#include "utility-2d/math2d.h"
+#include "math2d.h"
 
 
-#include "vtkSmartPointer.h"
-#include "vtkPolyData.h"
-#include "vtkUnsignedCharArray.h"
-#include "vtkPoints.h"
-#include "vtkIdList.h"
-#include "vtkCellData.h"
-#include "utility-3d/display3droutines.h"
+#include "vtkincludes.h"
+#include "display3droutines.h"
 
 
 namespace tr{
@@ -50,9 +45,9 @@ BaseVH::BaseVH()
 
 
 
-void BaseVH::setSilhouetteCameras(std::vector< int >& silhoutteCameras)
+void BaseVH::setSilhouetteCameras(std::vector< int >& silhouetteCameras)
 {
-  mSilhoutteCameras = silhoutteCameras;
+  mSilhouetteCameras = silhouetteCameras;
 }
 
 
@@ -61,7 +56,7 @@ void BaseVH::setSilhouetteCameras(std::vector< int >& silhoutteCameras)
 
 void BaseVH::buildMostOrthogonalCameras()
 {
-    int numSilhouetteCams = mSilhoutteCameras.size();
+    int numSilhouetteCams = mSilhouetteCameras.size();
 
     int numCams = mCalibration->get_cam_count();
 
@@ -82,7 +77,7 @@ void BaseVH::buildMostOrthogonalCameras()
         float width1 = mCalibration->get_image_width( camId1 );
         float height1 = mCalibration->get_image_height( camId1 );
 
-        cv::Point2f center1( width1 / 2 , height1 / 2 );
+        Eigen::Vector2d center1( width1 / 2 , height1 / 2 );
 
         mCalibration->getRay( camId1 , center1 , cameraRay1 );
 
@@ -92,12 +87,12 @@ void BaseVH::buildMostOrthogonalCameras()
 
         for( int sc = 0; sc < numSilhouetteCams; sc++ )
         {
-            int camId2 = mSilhoutteCameras[ sc ];
+            int camId2 = mSilhouetteCameras[ sc ];
 
             float width2 = mCalibration->get_image_width( camId2 );
             float height2 = mCalibration->get_image_height( camId2 );
 
-            cv::Point2f center2( width2 / 2 , height2 / 2 );
+            Eigen::Vector2d center2( width2 / 2 , height2 / 2 );
 
             Vector3d cameraRay2;
 
@@ -131,9 +126,9 @@ void BaseVH::buildMostOrthogonalCameras()
  
  **/
 
-void BaseVH::buildPremitives()
+void BaseVH::buildPrimitives()
 {
-    int numSilhouttes = mSilhoutteCameras.size();
+    int numsilhouettes = mSilhouetteCameras.size();
 
     int numCams = mCalibration->get_cam_count();
 
@@ -152,9 +147,9 @@ void BaseVH::buildPremitives()
 
     buildMostOrthogonalCameras();
 
-    for( int sc = 0; sc < numSilhouttes; sc++ )
+    for( int sc = 0; sc < numsilhouettes; sc++ )
     {
-		int sCamId = mSilhoutteCameras[ sc ];
+		int sCamId = mSilhouetteCameras[ sc ];
 
 		buildPrimitives( sCamId );
     }
@@ -165,45 +160,45 @@ void BaseVH::buildPremitives()
 void BaseVH::buildPrimitives( int camId )
 {
 
-	int numSilhouttes = mSilhoutteCameras.size();
+	int numsilhouettes = mSilhouetteCameras.size();
 
     int numCams = mCalibration->get_cam_count();
 
 
 
 	
-	mScale[ camId ] = mCalibration->silhoutte( camId ).get_scale();
+	mScale[ camId ] = mCalibration->silhouette( camId ).get_scale();
 
     mInvScale[ camId ] = 1.0f / mScale[ camId ] ;
 	
 	cv::Rect boundingBox;
 
-    mCalibration->silhoutte( camId ).get_bounding_box( boundingBox );	
+    mCalibration->silhouette( camId ).get_bounding_box( boundingBox );	
 		
 	cv::Point offset( boundingBox.x , boundingBox.y );
 
     mOffset[ camId ] = cv::Point2f( 0 , 0 );
 
-    std::vector< int > neighborCams( numSilhouttes - 1 );
+    std::vector< int > neighborCams( numsilhouettes - 1 );
 
     int id = 0;
 
-    for( int sc2 = 0; sc2 < numSilhouttes; sc2++ )
+    for( int sc2 = 0; sc2 < numsilhouettes; sc2++ )
     {
-		if( camId == mSilhoutteCameras[ sc2 ] )
+		if( camId == mSilhouetteCameras[ sc2 ] )
           continue;
 
-        neighborCams[ id ] = mSilhoutteCameras[ sc2 ];
+        neighborCams[ id ] = mSilhouetteCameras[ sc2 ];
 
         id++;
      }
 
-     mCalibration->silhoutte( camId ).getBoundingBoxImage( mBoundingBoxImages[ camId ] );
+     mCalibration->silhouette( camId ).getBoundingBoxImage( mBoundingBoxImages[ camId ] );
 
      std::vector< std::vector< cv::Point2f > > allContours;
      std::vector< cv::Vec4i > contourHierarchy;
   
-     mCalibration->silhoutte( camId ).getHierarchyContours( allContours , contourHierarchy );
+     mCalibration->silhouette( camId ).getHierarchyContours( allContours , contourHierarchy );
 	
      int numAllContours = allContours.size();
 
@@ -241,9 +236,9 @@ void BaseVH::buildPrimitives( int camId )
 
         for( int strip = 0; strip < numStrips; strip++ )
         {
-	   tr::Vector3d ray;
+	       Eigen::Vector3d  ray;
 	  
-	   mCalibration->getRay( camId , mObjectContours[ camId ][ contour ][ strip ] , ray );
+	       mCalibration->getRay( camId , mObjectContours[ camId ][ contour ][ strip ] , ray );
 	  
            generators[ strip ] = new Generator();
            generators[ strip ]->leftViewEdgeId = -1;
@@ -278,7 +273,7 @@ void BaseVH::buildPrimitives( int camId )
 	
         for( int strip = 0; strip < numStrips; strip++ )
         {
-	       tr::Vector3d ray;
+	       Eigen::Vector3d  ray;
 	  
 	       mCalibration->getRay( camId , mObjectContours[ camId ][ contour ][ strip ] , ray );
 	  
@@ -325,7 +320,7 @@ void BaseVH::buildPrimitives( int camId )
 void BaseVH::buildPrimitivesFromImageBoundary( int camId )
 {
  
-	int numSilhouttes = mSilhoutteCameras.size();
+	int numsilhouettes = mSilhouetteCameras.size();
 
     int numCams = mCalibration->get_cam_count();
 	
@@ -418,7 +413,7 @@ void BaseVH::buildPrimitivesFromImageBoundary( int camId )
 	
         for( int strip = 0; strip < numStrips; strip++ )
         {
-	       tr::Vector3d ray;
+	       Eigen::Vector3d  ray;
 	  
 	       mCalibration->getRay( camId , mObjectContours[ camId ][ contour ][ strip ] , ray );
 	  
@@ -476,11 +471,11 @@ int BaseVH::getMostOrthogonalUnusedCamera(int camId)
 
     int mostOrthogonalCam = -1;
     
-    int numSilhouetteCams = mSilhoutteCameras.size();
+    int numSilhouetteCams = mSilhouetteCameras.size();
 
     for( int sc = 0; sc < numSilhouetteCams; sc++ )
     {
-        int camId2 = mSilhoutteCameras[ sc ];
+        int camId2 = mSilhouetteCameras[ sc ];
 	
 	if( camId2 == camId )
 	  continue;
@@ -544,7 +539,7 @@ void BaseVH::stripEdgeIntersection( int camId, int contourId, int stripId, Eigen
     point2.y() = ( mObjectContours[ camId ][ contourId ][ stripId2 ].y + mOffset[ camId ].y ) * mInvScale[ camId ];
 
 
-    tr::lineToLineIntersection2D( point1 , Eigen::Vector2d , end1 , end2 , intersectionPoint , coefficientPairs );
+    tr::lineToLineIntersection2D( point1 , point2 , end1 , end2 , intersectionPoint , coefficientPairs );
 
 }
 
@@ -571,7 +566,7 @@ float BaseVH::distanceToTheStrip( Eigen::Vector2d epipole , Eigen::Vector2d seco
 }
 
 
-bool BaseVH::isInsideToEdge( Eigen::Vector2d point1 , Eigen::Vector2d Eigen::Vector2d , Eigen::Vector2d point )
+bool BaseVH::isInsideToEdge( Eigen::Vector2d point1 , Eigen::Vector2d point2 , Eigen::Vector2d point )
 {
   float val = ( point.y() - point1.y() ) * ( point2.x() - point1.x() ) - ( point2.y() - point1.y() ) * ( point.x() - point1.x() );
 
@@ -596,7 +591,7 @@ bool BaseVH::isInsideStrip(  int camId, int contourId , int stripId, Eigen::Vect
     point2.y() = ( mObjectContours[ camId ][ contourId ][ stripId2 ].y + mOffset[ camId ].y ) * mInvScale[ camId ];
   
   
-   return isInsideToEdge(  point1 , Eigen::Vector2d , point  );
+   return isInsideToEdge(  point1 , point2 , point  );
 
 }
 

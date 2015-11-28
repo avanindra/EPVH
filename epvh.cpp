@@ -27,17 +27,16 @@
 */
 
 #include "epvh.h"
-#include "utility-2d/sortingpredicates.h"
-#include <utility-2d/math2d.h>
-#include "utility-3d/display3droutines.h"
+#include "sortingpredicates.h"
+#include <math2d.h>
+#include "display3droutines.h"
 #include "vtkPolyData.h"
 #include "vtkIdList.h"
 #include "vtkUnsignedCharArray.h"
 #include "vtkCellData.h"
 #include "vtkSmartPointer.h"
 #include "limits.h"
-#include <qtextstream.h>
-#include "utility-3d/math3d.h"
+#include "math3d.h"
 // #include "opencv/cv".h
 namespace tr{
 
@@ -52,7 +51,7 @@ namespace tr{
 
 		strips.clear();
 
-		Point2 epipole;
+        Eigen::Vector2d epipole;
 
 		Point3d cameraCenter1;
 
@@ -84,7 +83,7 @@ namespace tr{
 		float w = mCalibration->get_image_width( camId2 );
 		float h = mCalibration->get_image_height( camId2 );
 
-		Point2 refPoint( w / 2 , h/ 2 );
+        Eigen::Vector2d refPoint( w / 2 , h/ 2 );
 
 		Vector2 vec1 = refPoint - epipole;
 
@@ -106,7 +105,7 @@ namespace tr{
 
 			for( int pp = 0; pp < numPoints; pp++ , totalStripId++ , slopeId++ )
 			{
-				Point2 silhouettePoint;
+                Eigen::Vector2d silhouettePoint;
 
 				silhouettePoint.x() = ( mObjectContours[ camId2 ][ contour ][ pp ].x + mOffset[ camId2 ].x ) * mInvScale[ camId2 ];
 				silhouettePoint.y() = ( mObjectContours[ camId2 ][ contour ][ pp ].y + mOffset[ camId2 ].y ) * mInvScale[ camId2 ];
@@ -192,7 +191,7 @@ namespace tr{
 				end2.x() = ( mObjectContours[ camId2 ][ cid2 ][ stId2 ].x + mOffset[ camId2 ].x ) * mInvScale[ camId2 ];
 				end2.y() = ( mObjectContours[ camId2 ][ cid2 ][ stId2 ].y + mOffset[ camId2 ].y ) * mInvScale[ camId2 ];
 
-				Point2 secondEnd = ( end1 + end2 ) / 2;
+                Eigen::Vector2d secondEnd = ( end1 + end2 ) / 2;
 
 				edgeDistPair.second = distanceToTheStrip( epipole , secondEnd , camId2 , contourId , stripId );
 
@@ -218,13 +217,13 @@ namespace tr{
 
 	void EPVH::buildClippers( )
 	{
-		int numSilhouetteCams = mSilhoutteCameras.size();
+		int numSilhouetteCams = mSilhouetteCameras.size();
 
 		mClippers.resize( mCalibration->get_cam_count() );
 
 		for( int sc = 0; sc < numSilhouetteCams; sc++ )
 		{
-			int camId = mSilhoutteCameras[ sc ];
+			int camId = mSilhouetteCameras[ sc ];
 
 			mClippers[ camId ].addContours( mObjectContours[ camId ] );
 
@@ -249,13 +248,13 @@ namespace tr{
 	void EPVH::initiateWithViewingEdges()
 	{
 
-		int numCams = mSilhoutteCameras.size();
+		int numCams = mSilhouetteCameras.size();
 
 		std::vector< std::vector< tr::Edge > > viewingEdges;
 
 		for( int ss = 0; ss < numCams; ss++ )
 		{
-			int sCamId = mSilhoutteCameras[ ss ];
+			int sCamId = mSilhouetteCameras[ ss ];
 
 			std::vector< std::vector< tr::Edge > > edges1 ;
 
@@ -266,10 +265,10 @@ namespace tr{
 			for( int ss2 = 0; ss2 < numCams; ss2++ )
 			{ 
 
-				if( ( ss2 == ss ) || ( mSilhoutteCameras[ ss2 ] == mMostOrthogonalCamera[ sCamId ]  ) )
+				if( ( ss2 == ss ) || ( mSilhouetteCameras[ ss2 ] == mMostOrthogonalCamera[ sCamId ]  ) )
 					continue;
 
-				int sCamId2 = mSilhoutteCameras[ ss2 ];
+				int sCamId2 = mSilhouetteCameras[ ss2 ];
 
 				updateViewingEdges( sCamId , sCamId2 , edges1 );
 
@@ -357,8 +356,8 @@ namespace tr{
 					v1->mGen->mAllVertices.push_back( v1 );
 					v2->mGen->mAllVertices.push_back( v2 );
 
-					v1->mLE = ( edge.point1 - edge.point2 );
-					v2->mLE = ( edge.point2 - edge.point1 );
+                    v1->mLE = ( edge.point1 - edge.point2 );
+                    v2->mLE = ( edge.point2 - edge.point1 );
 
 					v1->mLE.normalize();
 					v2->mLE.normalize();  
@@ -942,11 +941,11 @@ namespace tr{
 		vtkSmartPointer< vtkIdList > polygon = vtkSmartPointer< vtkIdList >::New();
 
 
-		int numSilhouetteCams = mSilhoutteCameras.size();
+		int numSilhouetteCams = mSilhouetteCameras.size();
 
 		for( int sc = 0; sc < numSilhouetteCams; sc++ )
 		{
-			int sCamId = mSilhoutteCameras[ sc ];
+			int sCamId = mSilhouetteCameras[ sc ];
 
 			int numContours = mObjectContours[ sCamId ].size();
 
@@ -1192,7 +1191,7 @@ namespace tr{
 
 		dst.mOffset = mOffset;
 
-		dst.mSilhoutteCameras = mSilhoutteCameras;
+		dst.mSilhouetteCameras = mSilhouetteCameras;
 
 		dst.mCameraViewingEdges = mCameraViewingEdges;
 
@@ -1290,21 +1289,21 @@ namespace tr{
 		clipStripId = -1;
 
 		bool isClipped = false;  
-		int numSilhouetteCams = mSilhoutteCameras.size();  
+		int numSilhouetteCams = mSilhouetteCameras.size();  
 
-		//   tr::Vector3d dir = point2 - point1;
+        //   tr::Vector3d dir = Eigen::Vector2d - point1;
 
 		for( int sc = 0; sc < numSilhouetteCams; sc++  )
 		{  
             Eigen::Vector2d  proj1 ,  proj2 ;
 
-			int camId = mSilhoutteCameras[ sc ];
+			int camId = mSilhouetteCameras[ sc ];
 
 			if( camId == camId1 || camId == camId2 )
 				continue;
 
-            mCalibration->projectPoin( point1 , camId , proj1 );
-            mCalibration->projectPoin( point2 , camId , proj2 );
+            mCalibration->projectPoint( point1 , camId , proj1 );
+            mCalibration->projectPoint( point2 , camId , proj2 );
 
             Eigen::Vector2d clippedEnd;
 
@@ -1327,9 +1326,9 @@ namespace tr{
 				// 
 				//       double depth = Math3D::lineIntersection( point1 , dir , cameraCenter , ray );
 
-				double depth = clipWithGenerator( point1 , point2 , camId , strip.first , strip.second );
+                double depth = clipWithGenerator( point1 , point2 , camId , strip.first , strip.second );
 
-				point2 = point1 + depth * ( point2 - point1 ); 
+                point2 = point1 + depth * ( point2 - point1 );
 
 				clipCamId = camId;
 				clipContourId = strip.first;
@@ -1344,7 +1343,7 @@ namespace tr{
 	}
 
 
-	void EPVH::clipEdge( Edge edge, int camId, vector< Edge >& clippedEdges )
+	void EPVH::clipEdge( Edge edge, int camId, std::vector< Edge >& clippedEdges )
 	{
 
 		std::vector< std::pair< int , int >  > strips;
@@ -1352,8 +1351,8 @@ namespace tr{
 
         Eigen::Vector2d end1 , end2;
 
-        mCalibration->projectPoin( edge.point1 , camId , end1 );
-        mCalibration->projectPoin( edge.point2 , camId , end2 );
+        mCalibration->projectPoint( edge.point1 , camId , end1 );
+        mCalibration->projectPoint( edge.point2 , camId , end2 );
 
         std::pair< Eigen::Vector2d , Eigen::Vector2d > inititialEdge;
 
@@ -1372,7 +1371,7 @@ namespace tr{
 
 		int numClippedEdges = clippedEdgesTemp.size();
 
-		Vector3d dir = ( edge.point2 - edge.point1 );
+        Vector3d dir = ( edge.point2 - edge.point1 );
 
 		Point3d cameraCenter;
 
@@ -1399,7 +1398,7 @@ namespace tr{
 
 				currentEdge.point1 = edge.point1 + depth * dir;   */ 
 
-				double depth = clipWithGenerator( edge.point1 , edge.point2 , camId , strips[ 2 * ce ].first , strips[ 2 * ce ].second );
+                double depth = clipWithGenerator( edge.point1 , edge.point2 , camId , strips[ 2 * ce ].first , strips[ 2 * ce ].second );
 
 				currentEdge.point1 = edge.point1 + depth * dir;
 
@@ -1417,11 +1416,11 @@ namespace tr{
 				// 
 				//       double depth = Math3D::lineIntersection( edge.point1 , dir , cameraCenter , ray );
 				// 
-				//       currentEdge.point2 = edge.point1 + depth * dir; 
+                //       currentEdge.point2 = edge.point1 + depth * dir;
 
-				double depth = clipWithGenerator( edge.point1 , edge.point2 , camId , strips[ 2 * ce + 1 ].first , strips[ 2 * ce + 1 ].second );
+                double depth = clipWithGenerator( edge.point1 , edge.point2 , camId , strips[ 2 * ce + 1 ].first , strips[ 2 * ce + 1 ].second );
 
-				currentEdge.point2 = edge.point1 + depth * dir;
+                currentEdge.point2 = edge.point1 + depth * dir;
 
 			}
 
@@ -1443,14 +1442,14 @@ namespace tr{
 		float w = mCalibration->get_image_width( camId2 );
 		float h = mCalibration->get_image_height( camId2 );
 
-		Point2 epipole , refPoint( w / 2 , h / 2 );
+        Eigen::Vector2d epipole , refPoint( w / 2 , h / 2 );
 
 		Point3d cameraCenter1 , cameraCenter2 , epipoleHmg1 , epipoleHmg2 ;
 
 		mCalibration->get_camera_center( camId1 , cameraCenter1 );
 		mCalibration->get_camera_center( camId2 , cameraCenter2 );
 
-        mCalibration->projectPoin( cameraCenter1 , camId2 , epipole );
+        mCalibration->projectPoint( cameraCenter1 , camId2 , epipole );
 
 		Vector2 vec1 = refPoint - epipole;
 
@@ -1468,7 +1467,7 @@ namespace tr{
 
 		std::vector< std::pair< int , float > > slopes( numSlopePoints ) ;
 
-		std::vector< Point2 > infinityEnds( numTotalPoints );
+        std::vector< Eigen::Vector2d > infinityEnds( numTotalPoints );
 
 		std::vector< Vector3d > raySet( numTotalPoints ) ;
 
@@ -1489,7 +1488,7 @@ namespace tr{
 
 			for( int pp = 0; pp < numPoints; pp++ , totalStripId++ , slopeId++ )
 			{
-				Point2 silhouettePoint , infiniteEnd;
+                Eigen::Vector2d silhouettePoint , infiniteEnd;
 
 				silhouettePoint.x() = ( mObjectContours[ camId1 ][ contour ][ pp ].x + mOffset[ camId1 ].x ) * mInvScale[ camId1 ];
 				silhouettePoint.y() = ( mObjectContours[ camId1 ][ contour ][ pp ].y + mOffset[ camId1 ].y ) * mInvScale[ camId1 ];
@@ -1546,7 +1545,7 @@ namespace tr{
 
 		int currentId = 0;
 
-		Point2 intersectionPoint;
+        Eigen::Vector2d intersectionPoint;
 
 		std::pair< float , float > coefficientPair;
 
@@ -1591,7 +1590,7 @@ namespace tr{
 
 							Edge &edge = viewingEdgeSet.back();
 
-							edge.point2 = cameraCenter1 + depth * raySet[ totalStripId ];
+                            edge.point2 = cameraCenter1 + depth * raySet[ totalStripId ];
 
 							edge.depth2 = depth;
 
@@ -1657,19 +1656,19 @@ namespace tr{
 	}
 
 
-	void EPVH::initiateViewingEdges2( int camId1, int camId2, vector< vector< Edge > >& viewingEdges)
+	void EPVH::initiateViewingEdges2( int camId1, int camId2, std::vector< std::vector< Edge > >& viewingEdges)
 	{
 		float w = mCalibration->get_image_width( camId2 );
 		float h = mCalibration->get_image_height( camId2 );
 
-		Point2 epipole , refPoint( w / 2 , h / 2 );
+        Eigen::Vector2d epipole , refPoint( w / 2 , h / 2 );
 
 		Point3d cameraCenter1 , cameraCenter2 , epipoleHmg1 , epipoleHmg2 ;
 
 		mCalibration->get_camera_center( camId1 , cameraCenter1 );
 		mCalibration->get_camera_center( camId2 , cameraCenter2 );
 
-        mCalibration->projectPoin( cameraCenter1 , camId2 , epipole );
+        mCalibration->projectPoint( cameraCenter1 , camId2 , epipole );
 
 		int numContours = mObjectContours[ camId1 ].size();
 
@@ -1731,7 +1730,7 @@ namespace tr{
 
 				clippedEdgesTemp.clear();
 
-				tr::Vector2f ray2D = infiniteEnd - epipolef;
+				Eigen::Vector2d ray2D = infiniteEnd - epipolef;
 
 				ray2D.normalize();
 
@@ -1786,7 +1785,7 @@ namespace tr{
 
 						double depth = clipRayWithGenerator( cameraCenter1 , ray1 , camId2 , currentEdge.contourSecond , currentEdge.stripSecond );
 
-						currentEdge.point2 = cameraCenter1 + depth * ray1;
+                        currentEdge.point2 = cameraCenter1 + depth * ray1;
 					}
 
 
@@ -1842,11 +1841,11 @@ namespace tr{
 
 	void EPVH::computeGeneratorNormals()
 	{
-		int numSilhouetteCams = mSilhoutteCameras.size();
+		int numSilhouetteCams = mSilhouetteCameras.size();
 
 		for( int sc = 0; sc < numSilhouetteCams; sc++ )
 		{
-			int sCamId = mSilhoutteCameras[ sc ];
+			int sCamId = mSilhouetteCameras[ sc ];
 
 			int numContours = mObjectContours[ sCamId ].size();
 
@@ -1978,7 +1977,7 @@ namespace tr{
 						edge.camSecond = edge2.camSecond;
 						edge.contourSecond = edge2.contourSecond;
 						edge.stripSecond = edge2.stripSecond;
-						edge.point2 = edge2.point2;
+                        edge.point2 = edge2.point2;
 						edge.depth2 = edge2.depth2;
 
 						intersectedEdgeSet.push_back( edge );
@@ -2020,7 +2019,7 @@ namespace tr{
 
 	bool EPVH::compute()
 	{
-		buildPremitives();
+		buildPrimitives();
 
 		computeGeneratorNormals();
 
@@ -2091,15 +2090,15 @@ namespace tr{
 
 		for( int ss = 0; ss < numSilhouetteCameras ; ss++ )
 		{
-			mSilhoutteCameras.push_back( silhouetteCameras[ ss ] );
+			mSilhouetteCameras.push_back( silhouetteCameras[ ss ] );
 		}
 
 		for( int bb = 0; bb < numImbCams ; bb++ )
 		{
-			mSilhoutteCameras.push_back( imageBoundaryCameras[ bb ] );
+			mSilhouetteCameras.push_back( imageBoundaryCameras[ bb ] );
 		}
 
-		int numSilhouttes = mSilhoutteCameras.size();
+		int numSilhouttes = mSilhouetteCameras.size();
 
 		int numCams = mCalibration->get_cam_count();
 
@@ -2119,12 +2118,12 @@ namespace tr{
 
 		for( int ss = 0; ss < numSilhouetteCameras ; ss++ )
 		{
-			buildPrimitives( mSilhoutteCameras[ ss ] );
+			buildPrimitives( mSilhouetteCameras[ ss ] );
 		}
 
-		for( int ss = numSilhouetteCameras; ss < mSilhoutteCameras.size() ; ss++ )
+		for( int ss = numSilhouetteCameras; ss < mSilhouetteCameras.size() ; ss++ )
 		{
-			buildPrimitivesFromImageBoundary( mSilhoutteCameras[ ss ] );
+			buildPrimitivesFromImageBoundary( mSilhouetteCameras[ ss ] );
 		}
 
 		computeGeneratorNormals();
@@ -2178,12 +2177,12 @@ namespace tr{
 	{
 
 
-		if( std::find( mSilhoutteCameras.begin() , mSilhoutteCameras.end() , camId ) == mSilhoutteCameras.end() )
+		if( std::find( mSilhouetteCameras.begin() , mSilhouetteCameras.end() , camId ) == mSilhouetteCameras.end() )
 		{
 
 			//std::cout<<" adding next silhouette camera "<<std::endl;
 
-			mSilhoutteCameras.push_back( camId );
+			mSilhouetteCameras.push_back( camId );
 		}
 		else
 		{
@@ -2209,12 +2208,12 @@ namespace tr{
 
 		initiateViewingEdges( camId , orthogonalCam , edges );
 
-		int numSilhouetteCams = mSilhoutteCameras.size();
+		int numSilhouetteCams = mSilhouetteCameras.size();
 
 		for( int ss2 = 0; ss2 < numSilhouetteCams; ss2++ )
 		{ 
 
-			int sCamId2 = mSilhoutteCameras[ ss2 ];
+			int sCamId2 = mSilhouetteCameras[ ss2 ];
 
 			if( ( sCamId2 == camId ) || ( sCamId2 == orthogonalCam  ) )
 				continue;     
@@ -2229,7 +2228,7 @@ namespace tr{
 
 		for( int ss = 0; ss < numSilhouetteCams; ss++ )
 		{ 
-			int sCamId = mSilhoutteCameras[ ss ];
+			int sCamId = mSilhouetteCameras[ ss ];
 
 			if( ( sCamId == camId )  )
 				continue;     
@@ -2373,7 +2372,7 @@ namespace tr{
 
 
 	void EPVH::generatePolyData(
-        vector< vector< cv::Point2f > >& contours, vector< pair< Eigen::Vector2d, Eigen::Vector2d > >& edges, vtkSmartPointer< vtkPolyData >& edgePolyData, vector< pair< int, int > >& selectedPolygonSegments, vector< cv::Vec3f >& selectedSegmentColors
+        std::vector< std::vector< cv::Point2f > >& contours, std::vector< std::pair< Eigen::Vector2d, Eigen::Vector2d > >& edges, vtkSmartPointer< vtkPolyData >& edgePolyData, std::vector< std::pair< int, int > >& selectedPolygonSegments, std::vector< cv::Vec3f >& selectedSegmentColors
 		)
 	{
 		vtkSmartPointer<vtkUnsignedCharArray> colors = vtkSmartPointer<vtkUnsignedCharArray>::New();    
@@ -2487,7 +2486,7 @@ namespace tr{
 		tr::Display3DRoutines::displayPolyData( edgePolyData );
 	}
 
-    void EPVH::displayWithColor( int camId, vector< vector< cv::Point2f > >& contours, vector< pair< Eigen::Vector2d, Eigen::Vector2d > >& edges)
+    void EPVH::displayWithColor( int camId, std::vector< std::vector< cv::Point2f > >& contours, std::vector< std::pair< Eigen::Vector2d, Eigen::Vector2d > >& edges)
 	{
 		vtkSmartPointer< vtkPolyData > edgePolyData = vtkSmartPointer< vtkPolyData >::New();
 
@@ -2559,7 +2558,7 @@ namespace tr{
 
 	void EPVH::clear()
 	{
-		mSilhoutteCameras.clear();
+		mSilhouetteCameras.clear();
 		mMostOrthogonalCamera.clear();
 		mIsCameraUsed.clear();
 		mStripContourMap.clear();  

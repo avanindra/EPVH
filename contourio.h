@@ -4,6 +4,7 @@
 #include "string"
 #include "iostream"
 #include "eigenincludes.h"
+#include "vector"
 
 namespace tr{
 	

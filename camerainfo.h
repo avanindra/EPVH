@@ -20,6 +20,8 @@
 
 #include "vector"
 #include "eigenincludes.h"
+#include "opencvincludes.h"
+#include "silhouette.h"
 
 class CameraInfo
 {
@@ -27,23 +29,36 @@ class CameraInfo
 
 public:
 
-  std::vector< Eigen::Matrix< float , 3 , 4 > > mProjectionMatrices;
-  std::vector< Eigen::Matrix3f > mInvProjectionMatrices;
-  std::vector< Eigen::Vector3f > mCameraCenters;
+  std::vector< Eigen::Matrix< double , 3 , 4 > > mProjectionMatrices;
+  std::vector< Eigen::Matrix3d > mInvProjectionMatrices;
+  std::vector< Eigen::Vector3d > mCameraCenters;
 
   std::vector< cv::Size > mImageDims;
+
+  std::vector< tr::Silhouette > &mObjectSilhouettes;
+  std::vector< std::string > mObjectSilhouettePaths;
   
 
   public:
 
-    CameraInfo();
+	  CameraInfo( std::vector< tr::Silhouette >& silhouettes  );
 
     int get_image_width( int camId );
     int get_image_height( int camId );
 
     void projectPoint( Eigen::Vector3d objectPoint , int camId , Eigen::Vector2d& projection );
 
+	void projectHomogeneous(Eigen::Vector4d objectPoint, int camId, Eigen::Vector3d& projection);
+
     void getRay( int camId , const Eigen::Vector2d& imagePos , Eigen::Vector3d& rayDir  );
+
+	void getRay(int camId, const cv::Point2f& imagePos, Eigen::Vector3d& rayDir);
+
+	int get_cam_count();
+
+	tr::Silhouette& silhouette(int camId);
+
+	void get_camera_center(int camId, Eigen::Vector3d& camCenter);
 
     
     ~CameraInfo();

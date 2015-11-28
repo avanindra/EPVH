@@ -33,6 +33,7 @@
 #include "queue"
 #include "camerainfo.h"
 #include "opencvincludes.h"
+#include "list"
 
  
 
@@ -49,7 +50,7 @@ class Generator;
   
   Eigen::Vector3d  mCoords;
   
-  tr::Eigen::Vector3d  mLE;
+  Eigen::Vector3d  mLE;
   
   Eigen::Vector3d  mLeftCoords , mRightCoords;
   
@@ -136,7 +137,7 @@ public:
 typedef std::list< EdgeDistancePair > EdgeList;
 
 
-typedef priority_queue< EdgeDistancePair , std::vector< EdgeDistancePair > , EdgeDistancePredicate > PriorityEdgeQueue;
+typedef std::priority_queue< EdgeDistancePair , std::vector< EdgeDistancePair > , EdgeDistancePredicate > PriorityEdgeQueue;
 
 
 #define validIntersection(x) ( x.first > 0 && x.first < 1 && x.second > 0 && x.second < 1 )
@@ -148,7 +149,7 @@ class BaseVH
 protected:
   
   CameraInfo *mCalibration;
-  std::vector< int > mSilhoutteCameras;
+  std::vector< int > mSilhouetteCameras;
   std::vector< int > mMostOrthogonalCamera;
   std::vector< uchar > mIsCameraUsed;
   std::vector< std::vector< StripContourMap > > mStripContourMap;  
@@ -162,7 +163,7 @@ protected:
   std::vector< float > mScale , mInvScale ;  
   
   void buildMostOrthogonalCameras();  
-  void buildPremitives();
+  void buildPrimitives();
   void buildPrimitives( int camId );
   void buildPrimitivesFromImageBoundary( int camId );
   int getMostOrthogonalUnusedCamera( int camId );
@@ -172,16 +173,16 @@ protected:
   void stripEdgeIntersection( int camId , int contourId , int stripId , cv::Point2f end1 , cv::Point2f end2 , 
                               cv::Point2f &intersectionPoint , std::pair< float , float > &coefficientPairs );  
 
-  void stripEdgeIntersection( int camId, int contourId, int stripId, Point2 end1, Point2 end2,
-                              Point2& intersectionPoint, std::pair< float, float >& coefficientPairs );
+  void stripEdgeIntersection( int camId, int contourId, int stripId, Eigen::Vector2d end1, Eigen::Vector2d end2,
+	  Eigen::Vector2d& intersectionPoint, std::pair< float, float >& coefficientPairs);
   
   
-  float distanceToTheStrip( tr::Point2 epipole , tr::Point2 secondPoint , int camId , int contourId , int stripId );
+  float distanceToTheStrip( Eigen::Vector2d epipole , Eigen::Vector2d secondPoint , int camId , int contourId , int stripId );
   
   
-  inline bool isInsideToEdge( Point2 point1, Point2 point2, Point2 point );
+  inline bool isInsideToEdge( Eigen::Vector2d point1, Eigen::Vector2d point2, Eigen::Vector2d point );
   
-  bool isInsideStrip( int camId, int contourId , int stripId , Point2 point );
+  bool isInsideStrip( int camId, int contourId , int stripId , Eigen::Vector2d point );
 
   void displayContour3D( std::vector< std::vector< cv::Point2f > > contours );
 

@@ -17,10 +17,12 @@
 
 #include "camerainfo.h"
 
-CameraInfo::CameraInfo()
+
+CameraInfo::CameraInfo(std::vector< tr::Silhouette >& silhouettes) : mObjectSilhouettes( silhouettes )
 {
 
 }
+
 
 
 int CameraInfo::get_image_width( int camId )
@@ -50,9 +52,15 @@ void CameraInfo::projectPoint(Eigen::Vector3d objectPoint, int camId, Eigen::Vec
 
 }
 
+void CameraInfo::projectHomogeneous(Eigen::Vector4d objectPoint, int camId, Eigen::Vector3d& projection)
+{
+
+	projection = mProjectionMatrices[camId] * objectPoint;
+}
+
 void CameraInfo::getRay(int camId, const Eigen::Vector2d &imagePos, Eigen::Vector3d &rayDir)
 {
-  Eigen::Vectro3d pos3;
+  Eigen::Vector3d pos3;
 
   pos3( 0 ) = imagePos( 0 );
   pos3( 1 ) = imagePos( 1 );
@@ -63,6 +71,35 @@ void CameraInfo::getRay(int camId, const Eigen::Vector2d &imagePos, Eigen::Vecto
   rayDir.normalize();
 }
 
+void CameraInfo::getRay(int camId, const cv::Point2f& imagePos, Eigen::Vector3d& rayDir)
+{
+	Eigen::Vector3d pos3;
+
+	pos3(0) = imagePos.x;
+	pos3(1) = imagePos.y;
+	pos3(2) = 1;
+
+	rayDir = mInvProjectionMatrices[camId] * pos3;
+
+	rayDir.normalize();
+}
+
+
+int CameraInfo::get_cam_count()
+{
+	return mProjectionMatrices.size();
+}
+
+void CameraInfo::get_camera_center(int camId, Eigen::Vector3d& camCenter)
+{
+	camCenter = mCameraCenters[camId];
+}
+
+
+tr::Silhouette& CameraInfo::silhouette(int camId)
+{
+	return mObjectSilhouettes[camId];
+}
 
 CameraInfo::~CameraInfo()
 {

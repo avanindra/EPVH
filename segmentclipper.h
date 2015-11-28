@@ -34,7 +34,7 @@
 #include <algorithm>
 #include <iostream>
 #include "opencvincludes.h"
-#include "types/generaltypes.h"
+#include "generaltypes.h"
 
 
 
@@ -48,7 +48,7 @@ struct Segment
 };
 
 
-typedef std::pair< Segment , float > IndexValPair;
+typedef std::pair< Segment , double > IndexValPair;
 
 
 class SegmentClipper
@@ -62,11 +62,11 @@ class SegmentClipper
   
   std::vector< std::pair< int , int > > mUsedStack;
   
-  float xMin , xMax , yMin , yMax;
+  double xMin , xMax , yMin , yMax;
   
   int mStackTop;
   
-  std::vector< std::vector< tr::Point2f > > mPolygon;
+  std::vector< std::vector< Eigen::Vector2d > > mPolygon;
   
   std::vector< std::vector< cv::Point2f > > mCvPolygon;
   
@@ -91,40 +91,40 @@ public:
   
   void addContours( std::vector< std::vector< cv::Point2f > >  &contours );
   
-  void addContours(  std::vector< std::vector< tr::Point2f > >  &contours );
+  void addContours(  std::vector< std::vector< Eigen::Vector2d > >  &contours );
   
   void setContourHierarchy( std::vector< cv::Vec4i > &contourHierarchy );
   
-  void add( int contourId , int segmentId , tr::Point2f end1 , tr::Point2f end2 );
+  void add( int contourId , int segmentId , Eigen::Vector2d end1 , Eigen::Vector2d end2 );
   
   void add( int contourId , int segmentId , cv::Point2f end1 , cv::Point2f end2 );
   
-  bool search( tr::Point2f end1 , tr::Point2f end2 , int &index );
+  bool search( Eigen::Vector2d end1 , Eigen::Vector2d end2 , int &index );
   
   
-  bool clipSegment2( tr::Point2f end1 , tr::Point2f end2 , 
-		    std::vector< std::pair< tr::Point2f , tr::Point2f > > &clippedSegments , 
+  bool clipSegment2( Eigen::Vector2d end1 , Eigen::Vector2d end2 , 
+		    std::vector< std::pair< Eigen::Vector2d , Eigen::Vector2d > > &clippedSegments , 
 		    std::vector< std::pair< int , int > > &stripIds  );
   
-  bool clipRay( tr::Point2f end1 , tr::Point2f dir , std::vector< std::pair< tr::Point2f , tr::Point2f > > &clippedSegments , 
+  bool clipRay( Eigen::Vector2d end1 , Eigen::Vector2d dir , std::vector< std::pair< Eigen::Vector2d , Eigen::Vector2d > > &clippedSegments , 
 		        std::vector< std::pair< int , int > > &stripIds );
   
-  float firstClip( tr::Point2f end1 , tr::Point2f end2 , 
-		           tr::Point2f &clippedEnd , std::pair< int , int > &strip  );
+  double firstClip( Eigen::Vector2d end1 , Eigen::Vector2d end2 , 
+		           Eigen::Vector2d &clippedEnd , std::pair< int , int > &strip  );
 
   void displaySegments( bool horizontal = true , bool forward = true );
   
-  void displaySegments( std::vector< std::pair< tr::Point2f , tr::Point2f >  > &strips );
+  void displaySegments( std::vector< std::pair< Eigen::Vector2d , Eigen::Vector2d >  > &strips );
   
-  bool isInsideForeground( tr::Point2f point );
+  bool isInsideForeground( Eigen::Vector2d point );
   
   void clear();
   
 protected:
 
-  int binarySearch( float val , const std::vector< IndexValPair > &searchArray );  
+  int binarySearch( double val , const std::vector< IndexValPair > &searchArray );  
   
-  bool isInsideSegment( tr::Point2f point , std::pair< int , int > strip );
+  bool isInsideSegment( Eigen::Vector2d point , std::pair< int , int > strip );
   
   
   

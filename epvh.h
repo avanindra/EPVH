@@ -116,20 +116,20 @@ protected:
   
   
   void generatePolyData( std::vector< std::vector< cv::Point2f > >& contours , 
-			     std::vector< std::pair< tr::Point2f , tr::Point2f > > &edges, 
+			     std::vector< std::pair< Eigen::Vector2d , Eigen::Vector2d > > &edges, 
 			     vtkSmartPointer< vtkPolyData >& edgePolyData);
   
   void generatePolyData(
                          std::vector< std::vector< cv::Point2f > >& contours,
-		                 std::vector< std::pair< tr::Point2f, tr::Point2f > >& edges, 
+		                 std::vector< std::pair< Eigen::Vector2d, Eigen::Vector2d > >& edges, 
 		                 vtkSmartPointer< vtkPolyData >& edgePolyData, 
 		                 std::vector< std::pair< int, int > >& selectedPolygonSegments ,
 		                 std::vector< cv::Vec3f >& selectedSegmentColors
 		               );
   
-  void display( std::vector< std::vector< cv::Point2f > >& contours, std::vector< std::pair< tr::Point2f, tr::Point2f > >& edges );
+  void display( std::vector< std::vector< cv::Point2f > >& contours, std::vector< std::pair< Eigen::Vector2d, Eigen::Vector2d > >& edges );
   
-  void displayWithColor( int camId ,std::vector< std::vector< cv::Point2f > >& contours, std::vector< std::pair< tr::Point2f, tr::Point2f > >& edges   );
+  void displayWithColor( int camId ,std::vector< std::vector< cv::Point2f > >& contours, std::vector< std::pair< Eigen::Vector2d, Eigen::Vector2d > >& edges   );
   
   void buildVisualHull( std::vector< int > &silhouetteIds , vtkSmartPointer< vtkPolyData > &visualHull );
   

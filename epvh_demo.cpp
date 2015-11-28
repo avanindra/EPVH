@@ -37,8 +37,8 @@ int main( int argc , char **argv )
   
   tr::ContourIO contourReader;
 
-  std::string contourFilePath = DDATASET_DIR + "/" +"alien-contour.txt";
-  std::string cameraFilepPath = DDATASET_DIR + "/" + "alien-camera.txt";
+  std::string contourFilePath = DATASET_DIR + std::string("/alien-contour.txt");
+  std::string cameraFilepPath = DATASET_DIR + std::string("/alien-camera.txt");
 
 
   
