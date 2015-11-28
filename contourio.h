@@ -3,6 +3,7 @@
 
 #include "string"
 #include "iostream"
+#include "eigenincludes.h"
 
 namespace tr{
 	

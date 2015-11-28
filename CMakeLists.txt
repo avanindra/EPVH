@@ -12,9 +12,13 @@ set( EIGEN_INCLDUE_DIR "" CACHE PATH "set eigen include dir" )
 set( EPVH_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/externalinclues )
 set( EPVH_LINK_LIBRARIES ${OpenCV_LIBS} )
 
+add_edfinitions( -DDATASET_DIR="${CMAKE_SOURCE_DIR}/dataset" )
+
 include_directories(  ${EPVH_INCLUDE_DIRS} ${OpenCV_INCLUDE_DIRS}  )
 
 add_library( epvh basevh.cpp camerainfo.cpp epvh.cpp segmentclipper.cpp silhouette.cpp contourio.cpp )
+
+add_executable( epvhdemo epvh_demo.cpp )
 
 
 add_subdirectory(externalinclues)

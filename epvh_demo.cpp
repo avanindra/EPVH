@@ -27,13 +27,34 @@
  */
 
 
+#include "contourio.h"
 
 
+void readContours( std::string& contourFilePath , std::vector< std::vector< Eigen::Vector3d > >& contours );
 
 int main( int argc , char **argv )
 {
   
-  
+  tr::ContourIO contourReader;
+
+  std::string contourFilePath = DDATASET_DIR + "/" +"alien-contour.txt";
+  std::string cameraFilepPath = DDATASET_DIR + "/" + "alien-camera.txt";
+
+
   
   return 0;
+}
+
+
+void readContours( std::string& contourFilePath , std::vector< std::vector< Eigen::Vector3d > >& contours )
+{
+
+
+}
+
+
+void readCameras( std::string& cameraFilePath , std::vector< Eigen::Matrix< float , 3 , 4 > >& projectionMatrices )
+{
+
+
 }
