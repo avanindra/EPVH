@@ -102,6 +102,11 @@ void lineToLineIntersection2D( Point2 &point1, Point2 &point2, Point2 &point3, P
 
 void lineToLineIntersection2D( cv::Point2f point1, cv::Point2f point2, cv::Point2f point3, cv::Point2f point4, cv::Point2f& intersection , std::pair< float , float > &coefficients );
 
+void lineToLineIntersection2D(cv::Point2f point1, cv::Point2f point2, cv::Point2f point3, cv::Point2f point4, cv::Point2f& intersection, std::pair< double , double > &coefficients);
+
+void lineToLineIntersection2D( Eigen::Vector2d point1, Eigen::Vector2d point2, Eigen::Vector2d point3, 
+	                           Eigen::Vector2d point4, Eigen::Vector2d& intersection, std::pair< double, double > &coefficients);
+
 
 class Math2D
 {

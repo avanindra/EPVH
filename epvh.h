@@ -76,7 +76,7 @@ protected:
   
   bool mDisplayDebug; 
   
-  void computeEpipolarRayBins( int camId1 , int camId2  , std::vector< EdgeList > &strips  , std::vector< float > &slopeValues );
+  void computeEpipolarRayBins( int camId1 , int camId2  , std::vector< EdgeList > &strips  , std::vector< double > &slopeValues );
   void initiateViewingEdges( int camId1 , int camId2 , std::vector< std::vector< Edge > >  &viewingEdges);
   void initiateViewingEdges2( int camId1 , int camId2 , std::vector< std::vector< Edge > >  &viewingEdges );
   void updateViewingEdges(  int camId1 , int camId2 , std::vector< std::vector< Edge > >  &viewingEdges );

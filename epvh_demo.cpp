@@ -32,6 +32,7 @@
 #include "iostream"
 #include "epvh.h"
 #include "camerainfo.h"
+#include "opencvincludes.h"
 
 #ifdef WIN32
 #include "conio.h"
@@ -67,6 +68,7 @@ int main( int argc , char **argv )
 
   cameraInfo.mCameraCenters.resize(numCams);
   cameraInfo.mInvProjectionMatrices.resize(numCams);
+  cameraInfo.mImageDims.resize(numCams);
 
   for (int cc = 0; cc < numCams; cc++)
   {
@@ -75,8 +77,23 @@ int main( int argc , char **argv )
 	  cameraInfo.mCameraCenters[cc] = camCenter;
 
 	  cameraInfo.mInvProjectionMatrices[cc] = projectionMatrices[cc].block(0, 0, 3, 3).inverse();
+
+	  std::string imagePath;
+
+	  if ( cc < 10 )
+	      imagePath = std::string( DATASET_DIR ) + "/alien-images/000" + std::to_string(cc);
+	  else
+		  imagePath = std::string(DATASET_DIR) + "/alien-images/00" + std::to_string(cc);
+
+	  cv::Mat im = cv::imread(imagePath);
+
+	  cameraInfo.mImageDims[cc] = im.size();
+
   }
 
+  cameraInfo.mContours = contours;
+
+  epvh.compute();
 
 
 #ifdef WIN32
@@ -107,7 +124,6 @@ void readContours( std::string& contourFilePath , std::vector< std::vector< Eige
 
 			if (std::getline(fs, line1) && std::getline(fs, line2) && std::getline(fs, str))
 			{
-			
 
 				int camId, numPoints;
 

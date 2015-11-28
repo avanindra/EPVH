@@ -45,7 +45,7 @@ namespace tr{
 
 	}
 
-	void EPVH::computeEpipolarRayBins( int camId1 , int camId2 , std::vector< EdgeList >& strips, std::vector< float >& slopeValues)
+	void EPVH::computeEpipolarRayBins( int camId1 , int camId2 , std::vector< EdgeList >& strips, std::vector< double >& slopeValues)
 	{
 		std::vector< PriorityEdgeQueue > tempStrips;
 
@@ -73,15 +73,15 @@ namespace tr{
 		strips.resize( numSlopePoints );
 		tempStrips.resize( numSlopePoints );
 
-		std::vector< std::pair< int , float > > slopes( numSlopePoints ) , backupSlopes;
+		std::vector< std::pair< int , double > > slopes( numSlopePoints ) , backupSlopes;
 		std::vector< int > reverseSlopeIndex( numTotalPoints , -1 );
 
-		std::vector< float > edgeDistances( numTotalPoints , 0 );
+		std::vector< double > edgeDistances( numTotalPoints , 0 );
 
 		int totalStripId = 0 , slopeId = 0;
 
-		float w = mCalibration->get_image_width( camId2 );
-		float h = mCalibration->get_image_height( camId2 );
+		double w = mCalibration->get_image_width( camId2 );
+		double h = mCalibration->get_image_height( camId2 );
 
         Eigen::Vector2d refPoint( w / 2 , h/ 2 );
 
@@ -1435,12 +1435,12 @@ namespace tr{
 	void EPVH::initiateViewingEdges( int camId1, int camId2, std::vector< std::vector< Edge > >& viewingEdges )
 	{ 
 		std::vector< EdgeList > strips;
-		std::vector< float > slopeValues;    
+		std::vector< double > slopeValues;    
 
 		computeEpipolarRayBins( camId1 , camId2 , strips , slopeValues );
 
-		float w = mCalibration->get_image_width( camId2 );
-		float h = mCalibration->get_image_height( camId2 );
+		double w = mCalibration->get_image_width( camId2 );
+		double h = mCalibration->get_image_height( camId2 );
 
         Eigen::Vector2d epipole , refPoint( w / 2 , h / 2 );
 
@@ -1465,7 +1465,7 @@ namespace tr{
 		}
 
 
-		std::vector< std::pair< int , float > > slopes( numSlopePoints ) ;
+		std::vector< std::pair< int , double > > slopes( numSlopePoints ) ;
 
         std::vector< Eigen::Vector2d > infinityEnds( numTotalPoints );
 
@@ -1547,13 +1547,13 @@ namespace tr{
 
         Eigen::Vector2d intersectionPoint;
 
-		std::pair< float , float > coefficientPair;
+		std::pair< double , double > coefficientPair;
 
 		for( int ss = 0; ss < numSlopes; ss++ )
 		{
 			std::vector< Edge > viewingEdgeSet;
 
-			float slope = slopes[ ss ].second;
+			double slope = slopes[ ss ].second;
 
 			int totalStripId = slopes[ ss ].first;
 
@@ -1658,8 +1658,8 @@ namespace tr{
 
 	void EPVH::initiateViewingEdges2( int camId1, int camId2, std::vector< std::vector< Edge > >& viewingEdges)
 	{
-		float w = mCalibration->get_image_width( camId2 );
-		float h = mCalibration->get_image_height( camId2 );
+		double w = mCalibration->get_image_width( camId2 );
+		double h = mCalibration->get_image_height( camId2 );
 
         Eigen::Vector2d epipole , refPoint( w / 2 , h / 2 );
 

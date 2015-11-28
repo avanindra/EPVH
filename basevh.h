@@ -121,7 +121,7 @@ struct StripContourMap
   int contourId;
 };
 
-typedef std::pair< int , float > EdgeDistancePair;
+typedef std::pair< int , double > EdgeDistancePair;
 
 class EdgeDistancePredicate
 {
@@ -160,24 +160,25 @@ protected:
   std::vector< cv::Mat > mBoundingBoxImages;
   std::vector< cv::Mat > mGeneratorImages;
   std::vector< cv::Point2f > mOffset;
-  std::vector< float > mScale , mInvScale ;  
+  std::vector< double > mScale , mInvScale ;  
   
   void buildMostOrthogonalCameras();  
   void buildPrimitives();
   void buildPrimitives( int camId );
+  void buildPrimitives(int camId, std::vector< Eigen::Vector2d >& contour);
   void buildPrimitivesFromImageBoundary( int camId );
   int getMostOrthogonalUnusedCamera( int camId );
   void setCameraToUsed( int camId );
   void buildGeneratorImages();
   
   void stripEdgeIntersection( int camId , int contourId , int stripId , cv::Point2f end1 , cv::Point2f end2 , 
-                              cv::Point2f &intersectionPoint , std::pair< float , float > &coefficientPairs );  
+                              cv::Point2f &intersectionPoint , std::pair< double , double > &coefficientPairs );  
 
   void stripEdgeIntersection( int camId, int contourId, int stripId, Eigen::Vector2d end1, Eigen::Vector2d end2,
-	  Eigen::Vector2d& intersectionPoint, std::pair< float, float >& coefficientPairs);
+	  Eigen::Vector2d& intersectionPoint, std::pair< double, double >& coefficientPairs);
   
   
-  float distanceToTheStrip( Eigen::Vector2d epipole , Eigen::Vector2d secondPoint , int camId , int contourId , int stripId );
+  double distanceToTheStrip( Eigen::Vector2d epipole , Eigen::Vector2d secondPoint , int camId , int contourId , int stripId );
   
   
   inline bool isInsideToEdge( Eigen::Vector2d point1, Eigen::Vector2d point2, Eigen::Vector2d point );

@@ -37,13 +37,14 @@ public:
 
   std::vector< tr::Silhouette > &mObjectSilhouettes , mDummySilhouettes;
   std::vector< std::string > mObjectSilhouettePaths;
-  
 
+  std::vector< std::vector< Eigen::Vector2d > > mContours;
+  
   public:
 
-	  CameraInfo();
+	CameraInfo();
 
-	  CameraInfo( std::vector< tr::Silhouette >& silhouettes  );
+	CameraInfo( std::vector< tr::Silhouette >& silhouettes  );
 
     int get_image_width( int camId );
     int get_image_height( int camId );

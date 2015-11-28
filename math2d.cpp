@@ -190,6 +190,42 @@ void lineToLineIntersection2D( cv::Point2f point1 , cv::Point2f point2, cv::Poin
 }
 
 
+void lineToLineIntersection2D(cv::Point2f point1, cv::Point2f point2, cv::Point2f point3, cv::Point2f point4, cv::Point2f& intersection, std::pair< double, double > &coefficients)
+{
+	float delX12 = point1.x - point2.x;
+	float delX34 = point3.x - point4.x;
+	float delX42 = point4.x - point2.x;
+	float delY12 = point1.y - point2.y;
+	float delY34 = point3.y - point4.y;
+	float delY42 = point4.y - point2.y;
+
+	coefficients.first = (delX42 * delY34 - delX34 * delY42) / (delX12 * delY34 - delY12 * delX34);
+	coefficients.second = (delX12 * delY42 - delX42 * delY12) / (delX34 * delY12 - delY34 * delX12);
+
+	intersection.x = coefficients.second * point3.x + (1 - coefficients.second) * point4.x;
+	intersection.y = coefficients.second * point3.y + (1 - coefficients.second) * point4.y;
+}
+
+
+void lineToLineIntersection2D(Eigen::Vector2d point1, Eigen::Vector2d point2, Eigen::Vector2d point3,
+	Eigen::Vector2d point4, Eigen::Vector2d& intersection, std::pair< double, double > &coefficients)
+{
+
+	double delX12 = point1.x() - point2.x();
+	double delX34 = point3.x() - point4.x();
+	double delX42 = point4.x() - point2.x();
+	double delY12 = point1.y() - point2.y();
+	double delY34 = point3.y() - point4.y();
+	double delY42 = point4.y() - point2.y();
+
+	coefficients.first = (delX42 * delY34 - delX34 * delY42) / (delX12 * delY34 - delY12 * delX34);
+	coefficients.second = (delX12 * delY42 - delX42 * delY12) / (delX34 * delY12 - delY34 * delX12);
+
+	intersection.x() = coefficients.second * point3.x() + (1 - coefficients.second) * point4.x();
+	intersection.y() = coefficients.second * point3.y() + (1 - coefficients.second) * point4.y();
+}
+
+
 
 
 Math2D::Math2D()
