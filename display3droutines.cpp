@@ -187,7 +187,11 @@ void Display3DRoutines::displayPointSet(std::vector< Eigen::Vector3d >& vertices
 
 	for (int vv = 0; vv < numVerts; vv++)
 	{
-		unsigned char col[] = { colors[vv](0) * 255, colors[vv](1) * 255, colors[vv](2) * 255 };
+		unsigned char col[] = {(unsigned char) (colors[vv](0) * 255),
+        				(unsigned char) (colors[vv](1) * 255),
+        				(unsigned char) (colors[vv](2) * 255) };
+
+
 
 		vColors->InsertNextTupleValue(col);
 
