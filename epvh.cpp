@@ -2569,7 +2569,9 @@ namespace tr{
 
 					edgePolyData->InsertNextCell( VTK_LINE , cell );
 
-					const unsigned char _color[] = { colorVecs[ ee1 ][ ee2 ][ 0 ] , colorVecs[ ee1 ][ ee2 ][ 1 ] , colorVecs[ ee1 ][ ee2 ][ 2 ]};
+					const unsigned char _color[] = { (unsigned char)colorVecs[ ee1 ][ ee2 ][ 0 ] ,
+                                           				 (unsigned char) colorVecs[ ee1 ][ ee2 ][ 1 ] ,
+                                           				 (unsigned char) colorVecs[ ee1 ][ ee2 ][ 2 ]};
 
 					colors->InsertNextTupleValue(_color);
 				}

@@ -128,7 +128,7 @@ int main( int argc , char **argv )
 
   epvh.generatePolygons(polygons);
 
-  std::cout<< polygons->GetNumberOfVerts() <<"  "<<polygons->GetNumberOfCells() <<std::endl;
+  std::cout<< polygons->GetNumberOfPoints() <<"  "<<polygons->GetNumberOfCells() <<std::endl;
 
   vtkSmartPointer< vtkTriangleFilter > triangulator = vtkSmartPointer< vtkTriangleFilter >::New();
 
