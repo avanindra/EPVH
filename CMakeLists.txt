@@ -3,7 +3,7 @@ cmake_minimum_required( VERSION 3.0 )
 project( EPVH )
 
 find_package( OpenCV )
-find_package( Eigen )
+#find_package( Eigen )
 find_package( OpenGL )
 find_package( VTK )
 
@@ -15,6 +15,9 @@ include( ${VTK_USE_FILE} )
 endif()
 
 set( EIGEN_INCLDUE_DIR "" CACHE PATH "set eigen include dir" )
+
+set( EXECUTABLE_OUTPUT_PATH "" CACHE PATH "set eigen include dir" )
+set( LIBRARY_OUTPUT_PATH "" CACHE PATH "set library output path" )
 
 set( EPVH_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/externalinclues )
 set( EPVH_LINK_LIBRARIES ${OpenCV_LIBS} )

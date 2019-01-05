@@ -44,6 +44,8 @@ public:
   Display3DRoutines();
   
   static void displayPolyData( vtkSmartPointer< vtkPolyData > mesh ); 
+
+  void displayPolygons(vtkSmartPointer< vtkPolyData > mesh);
   
   //static void displayCarvePolyhedron( CarvePolyhedron &polyhedron );
 

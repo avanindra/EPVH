@@ -984,7 +984,7 @@ namespace tr{
 
 						tr::Vertex *prevVertex = 0; 
 
-						if( !vertexUsedFlag[ vert->mId ] )
+						//if( !vertexUsedFlag[ vert->mId ] )
 						{
 							Vertex *vNext = vert->mRight;
 
@@ -997,9 +997,11 @@ namespace tr{
                             {
                                 polygon->Reset();
 
+								std::cout<<" connection error "<<std::endl;
+
                                 break;
 
-                             //std::cout<<" connection error "<<std::endl;
+                             
                             }
 
 							if( vNext->mLeftGen == gen || vNext->mRightGen == gen || vNext->mGen == gen )
@@ -1029,6 +1031,8 @@ namespace tr{
                                     {
                                         polygon->Reset();
 
+										std::cout << " connection error " << std::endl;
+
                                         break;
 
                                      }
@@ -1041,9 +1045,11 @@ namespace tr{
                                         {
                                             polygon->Reset();
 
+											std::cout<<" connection error "<<std::endl;
+
                                             break;
 
-                                         //std::cout<<" connection error "<<std::endl;
+                                         
                                         }
 
 
@@ -1074,9 +1080,11 @@ namespace tr{
                                         {
                                             polygon->Reset();
 
+											std::cout<<" connection error "<<std::endl;
+
                                             break;
 
-                                         //std::cout<<" connection error "<<std::endl;
+                                        
                                         }
 
 										if(  v->mRightGen == gen || v->mLeftGen == gen || v->mGen == gen)
@@ -2108,13 +2116,13 @@ namespace tr{
 				{
 					const unsigned char _color[] = { 255, 0, 0 };
 
-					colors->InsertNextTupleValue(_color);
+					colors->InsertNextTypedTuple(_color);
 				}
 				else
 				{
 					const unsigned char _color[] = { 0, 0, 255 };
 
-					colors->InsertNextTupleValue(_color);
+					colors->InsertNextTypedTuple(_color);
 				}
 			}
 
@@ -2178,11 +2186,16 @@ namespace tr{
 			if( !vertex->mLeft || !vertex->mRight )
 			{
 				validConnections = false;
+
+				std::cout << "found invalid vertex connection " << std::endl;
 			}
 
 			if( mVertexChainCounter > 5000 )
 			{
 				validConnections = false;
+
+				std::cout << "found large vertex chain counter : " << mVertexChainCounter << std::endl;
+
 				break;
 			}
 
@@ -2463,7 +2476,7 @@ namespace tr{
 
 				const unsigned char _color[] = { 255 , 255 , 255 };
 
-				colors->InsertNextTupleValue(_color);
+				colors->InsertNextTypedTuple(_color);
 			}
 
 
@@ -2487,7 +2500,7 @@ namespace tr{
 
 				const unsigned char _color[] = { 255 , 255 , 255 };
 
-				colors->InsertNextTupleValue(_color);
+				colors->InsertNextTypedTuple(_color);
 
 			}
 
@@ -2573,7 +2586,7 @@ namespace tr{
                                            				 (unsigned char) colorVecs[ ee1 ][ ee2 ][ 1 ] ,
                                            				 (unsigned char) colorVecs[ ee1 ][ ee2 ][ 2 ]};
 
-					colors->InsertNextTupleValue(_color);
+					colors->InsertNextTypedTuple(_color);
 				}
 
 
@@ -2597,7 +2610,7 @@ namespace tr{
 
 					const unsigned char _color[] = { 255 , 255 , 255};
 
-					colors->InsertNextTupleValue(_color);
+					colors->InsertNextTypedTuple(_color);
 				}
 
 				edgePolyData->SetPoints( points );

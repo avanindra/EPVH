@@ -858,7 +858,7 @@ void BaseVH::displayContour3D( std::vector< std::vector< cv::Point2f > > contour
                                      (unsigned char) colorVecs[ ee1 ][ ee2 ][ 1 ] ,
                                      (unsigned char) colorVecs[ ee1 ][ ee2 ][ 2 ]};
   
-    colors->InsertNextTupleValue(_color);
+    colors->InsertNextTypedTuple(_color);
   }
   
   

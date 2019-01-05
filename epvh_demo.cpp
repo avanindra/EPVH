@@ -78,6 +78,8 @@ int main( int argc , char **argv )
 
   int skip = 0;
 
+  //numCams = 10;
+
   for (int cc = 0; cc < numCams; cc++)
   {
 	  Eigen::Vector3d camCenter = -projectionMatrices[cc].block(0, 0, 3, 3).inverse() * projectionMatrices[cc].block(0, 3, 3, 1);
@@ -130,13 +132,13 @@ int main( int argc , char **argv )
 
   std::cout<< polygons->GetNumberOfPoints() <<"  "<<polygons->GetNumberOfCells() <<std::endl;
 
-  vtkSmartPointer< vtkTriangleFilter > triangulator = vtkSmartPointer< vtkTriangleFilter >::New();
+  //vtkSmartPointer< vtkTriangleFilter > triangulator = vtkSmartPointer< vtkTriangleFilter >::New();
 
-  triangulator->SetInputData(polygons);
+  //triangulator->SetInputData(polygons);
 
-  triangulator->Update();
+  //triangulator->Update();
 
-  polygons->DeepCopy( triangulator->GetOutput() );
+  //polygons->DeepCopy( triangulator->GetOutput() );
 
   tr::Display3DRoutines::displayPolyData(polygons);
 

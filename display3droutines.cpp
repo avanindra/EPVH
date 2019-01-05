@@ -81,6 +81,12 @@ void Display3DRoutines::displayPolyData( vtkSmartPointer< vtkPolyData > mesh )
 }
 
 
+void Display3DRoutines::displayPolygons(vtkSmartPointer< vtkPolyData > mesh)
+{
+
+}
+
+
 //void Display3DRoutines::displayCarvePolyhedron( CarvePolyhedron& polyhedron )
 //{
 /*
@@ -193,7 +199,7 @@ void Display3DRoutines::displayPointSet(std::vector< Eigen::Vector3d >& vertices
 
 
 
-		vColors->InsertNextTupleValue(col);
+		vColors->InsertNextTypedTuple(col);
 
 		points->InsertNextPoint(vertices[vv](0), vertices[vv](1), vertices[vv](2));
 

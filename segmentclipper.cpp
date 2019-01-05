@@ -436,7 +436,7 @@ void SegmentClipper::displaySegments( std::vector< std::pair< Eigen::Vector2d , 
     
     const unsigned char _color[] = { 255 , 255 , 255 };
   
-    colors->InsertNextTupleValue(_color);
+    colors->InsertNextTypedTuple(_color);
   }
   
   
@@ -460,7 +460,7 @@ void SegmentClipper::displaySegments( std::vector< std::pair< Eigen::Vector2d , 
     
     const unsigned char _color[] = { 255 , 0 , 0 };
   
-    colors->InsertNextTupleValue(_color);
+    colors->InsertNextTypedTuple(_color);
     
   }
   
